@@ -17,6 +17,12 @@ project(MyOpenGLProject VERSION 1.0)
 # Find OpenGL (native support on both macOS and Windows)
 find_package(OpenGL REQUIRED)
 
+# Add GLAD subdirectory
+# add_subdirectory(glad/glad)
+add_library(glad STATIC glad/glad/src/glad.c)
+target_include_directories(glad PUBLIC glad/glad/include)
+
+
 add_subdirectory(glfw) # Adjust the path if necessary, assuming you put the GLFW submodule in 'external/glfw'
 
 
@@ -33,11 +39,13 @@ add_subdirectory(glfw) # Adjust the path if necessary, assuming you put the GLFW
 # Add the executable
 add_executable(main src/main.cpp)
 
+
 # Include directories
-target_include_directories(main PRIVATE include)
+target_include_directories(main PRIVATE glad/glad/include glfw/include include)
 
 # Link libraries
-target_link_libraries(main glfw OpenGL::GL)
+target_link_libraries(main PRIVATE glfw glad OpenGL::GL)
+
 
 # Platform-specific settings
 if (APPLE)
@@ -45,5 +53,7 @@ if (APPLE)
     target_link_libraries(main "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo")
 elseif(WIN32)
     # Link against Windows OpenGL
-    target_link_libraries(main opengl32)
+    target_link_libraries(main PRIVATE opengl32)
 endif()
+
+

@@ -1,3 +1,4 @@
+#include <glad/glad.h>  // Include GLAD before GLFW
 #include <GLFW/glfw3.h>
 // #include <OpenGL/gl3.h>
 #include <iostream>
@@ -114,6 +115,11 @@ int main()
     // delete unlinked versions of shaders, not needed anymore
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        // GLAD initialization failed
+        return -1;
+    }
 
     // render loop
     while (!glfwWindowShouldClose(window))
