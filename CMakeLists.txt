@@ -40,20 +40,22 @@ add_subdirectory(glfw) # Adjust the path if necessary, assuming you put the GLFW
 add_executable(main src/main.cpp)
 
 
-# Include directories
-target_include_directories(main PRIVATE glad/glad/include glfw/include include)
 
-# Link libraries
-target_link_libraries(main PRIVATE glfw glad OpenGL::GL)
+# # Platform-specific settings
+# if (APPLE)
+#     # Additional linking for macOS frameworks
+
+#     target_link_libraries(main "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo")
+# elseif(WIN32)
+#     # Link against Windows OpenGL
+#     target_link_libraries(main PRIVATE opengl32)
+# endif()
 
 
-# Platform-specific settings
-if (APPLE)
-    # Additional linking for macOS frameworks
-    target_link_libraries(main "-framework Cocoa" "-framework OpenGL" "-framework IOKit" "-framework CoreVideo")
-elseif(WIN32)
-    # Link against Windows OpenGL
-    target_link_libraries(main PRIVATE opengl32)
+if (WIN32)  # For Windows
+    target_include_directories(main PRIVATE glad/glad/include glfw/include include)
+    target_link_libraries(main PRIVATE glfw glad OpenGL::GL opengl32)
+elseif(APPLE)  # For macOS
+    target_include_directories(main PRIVATE glfw/include include)
+    target_link_libraries(main PRIVATE glfw "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()
-
-

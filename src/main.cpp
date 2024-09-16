@@ -1,6 +1,9 @@
-#include <glad/glad.h>  // Include GLAD before GLFW
+#ifdef _WIN32
+#include <glad/glad.h>  // GLAD for Windows
+#elif defined(__APPLE__)
+#include <OpenGL/gl.h>  // macOS OpenGL
+#endif
 #include <GLFW/glfw3.h>
-// #include <OpenGL/gl3.h>
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -116,10 +119,12 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    #ifdef _WIN32
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         // GLAD initialization failed
         return -1;
     }
+    #endif
 
     // render loop
     while (!glfwWindowShouldClose(window))
