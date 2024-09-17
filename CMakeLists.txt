@@ -19,9 +19,11 @@ find_package(OpenGL REQUIRED)
 
 # Add GLAD subdirectory
 # add_subdirectory(glad/glad)
-add_library(glad STATIC glad/glad/src/glad.c)
-target_include_directories(glad PUBLIC glad/glad/include)
 
+if (WIN32)  # For Windows
+    add_library(glad STATIC glad/glad/src/glad.c)
+    target_include_directories(glad PUBLIC glad/glad/include)
+endif()
 
 add_subdirectory(glfw) # Adjust the path if necessary, assuming you put the GLFW submodule in 'external/glfw'
 
