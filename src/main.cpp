@@ -1,10 +1,14 @@
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#define GLFW_INCLUDE_GLCOREARB
 #ifdef _WIN32
 #include <glad/glad.h>  // GLAD for Windows
 #elif defined(__APPLE__)
-#include <OpenGL/gl.h>  // macOS OpenGL
+#include <OpenGL/gl3.h>  // macOS OpenGL
 #endif
+
 #include <GLFW/glfw3.h>
 #include <iostream>
+
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -24,7 +28,7 @@ const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(0.0f, 0.8f, 0.6f, 1.0f);\n"
     "}\0";
 
 void checkCompileErrors(unsigned int shader, std::string type) {
@@ -49,7 +53,7 @@ int main()
 {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
     #ifdef __APPLE__
@@ -65,8 +69,6 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 
     #ifdef _WIN32
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -116,29 +118,7 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
-    glBindVertexArrayAPPLE(0); 
-
-
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // // sizeof size in bytes
-    // // vertices = actual data we want to send
-    // /* last parameter can have three forms:
-    // GL_STREAM_DRAW: the data is set only once and used by the GPU at most a few times.
-    // GL_STATIC_DRAW: the data is set only once and used many times.
-    // GL_DYNAMIC_DRAW: the data is changed a lot and used many times.
-    // */
-    // //set the vertex attributes pointers
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // unsigned int VAO;
-    // glGenVertexArraysAPPLE(1, &VAO);
-    // glBindVertexArrayAPPLE(VAO);
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
+    glBindVertexArray(0); 
 
 
     // render loop

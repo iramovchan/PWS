@@ -61,3 +61,4 @@ elseif(APPLE)  # For macOS
     target_include_directories(main PRIVATE glfw/include include)
     target_link_libraries(main PRIVATE glfw "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()
+
