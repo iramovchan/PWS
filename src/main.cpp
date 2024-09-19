@@ -129,7 +129,7 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        
+    
         processInput(window);
 
 		// rendering commands here
