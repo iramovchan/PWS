@@ -5,10 +5,11 @@
 #include <iostream>
 
 float vertices[] = {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
+    //positions          //colours
+     0.5f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  // top right
+     0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  // bottom left
+    -0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f   // top left 
 };
 unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
@@ -16,16 +17,20 @@ unsigned int indices[] = {  // note that we start from 0!
 };   
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec3 aColor; // the color variable has attribute position 1\n"
+    "out vec3 ourColor; // output a color to the fragment shader\n"
     "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   ourColor = aColor; // set ourColor to the input color we got from the vertex data\n"
     "}\0";
 //colour triangle somehow idfk
 const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;"
+    "out vec4 FragColor;\n"
+    "in vec3 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.0f, 0.75f, 0.2f, 1.0f);\n"
+    "   FragColor = vec4(ourColor, 1.0);\n"
     "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -80,6 +85,10 @@ int main()
         return -1;
     } 
 
+    int nrAttributes;
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &nrAttributes);
+    std::cout << "Maximum nr of vertex attributes supported: " << nrAttributes << std::endl;
+
     unsigned int VAO, EBO, VBO;
     glGenVertexArrays(1, &VAO);  
     glGenBuffers(1, &EBO);
@@ -112,8 +121,13 @@ int main()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
     // 4. then set the vertex attributes pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glEnableVertexAttribArray(1);
+
 
 
     // render loop
@@ -123,8 +137,8 @@ int main()
         processInput(window);
 
         // rendering commands here
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        //background colour
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         someTriangle(shaderProgram, VAO); 
