@@ -4,7 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "shader_texture_stuff//stb_image.h"
 
-#include <C:\Users\annem\PWS\projectwerkbench\PWS\src\shader_texture_stuff\shaderCode_s.h>
+#include <C:\path\to\PWS\src\shader_texture_stuff\shaderCode_s.h>
 
 #include <iostream>
 
@@ -82,7 +82,7 @@ int main()
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("C:\\Users\\annem\\PWS\\projectwerkbench\\PWS\\src\\shader_texture_stuff\\420texture.vs", "C:\\Users\\annem\\PWS\\projectwerkbench\\PWS\\src\\shader_texture_stuff\\420texture.fs"); // you can name your shader files however you like
+    Shader ourShader("C:\\path\\to\\PWS\\src\\shader_texture_stuff\\420texture.vs", "C:\\path\\to\\PWS\\src\\shader_texture_stuff\\420texture.fs"); // you can name your shader files however you like
 
 float vertices[] = {
         // positions          // colors           // texture coords
@@ -133,7 +133,7 @@ float vertices[] = {
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load("C:/Users/annem/PWS/projectwerkbench/PWS/src/shader_texture_stuff/container.jpg", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("C:/path/to/PWS/src/shader_texture_stuff/container.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
