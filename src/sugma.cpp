@@ -8,7 +8,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "shader_texture_stuff//stb_image.h"
-#include <C:\Users\annem\PWS\projectwerkbench\PWS\src\shader_texture_stuff\shaderCode_s.h>
+#include <C:path\to\shader_texture_stuff\shaderCode_s.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -85,7 +85,7 @@ int main()
 
     // build and compile our shader program
     // ------------------------------------
-    Shader ourShader("C:\\Users\\annem\\PWS\\projectwerkbench\\PWS\\src\\shader_texture_stuff\\520transform.vs", "C:\\Users\\annem\\PWS\\projectwerkbench\\PWS\\src\\shader_texture_stuff\\520transformdisco.fs"); // you can name your shader files however you like
+    Shader ourShader("C:path\\to\\shader_texture_stuff\\520transform.vs", "C:path\\to\\shader_texture_stuff\\520transformdisco.fs"); // you can name your shader files however you like
 
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
@@ -127,7 +127,7 @@ int main()
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char *data = stbi_load("C:/Users/annem/PWS/projectwerkbench/PWS/src/shader_texture_stuff/container.jpg", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("C:path/to/shader_texture_stuff/container.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -149,7 +149,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("C:\\Users\\annem\\PWS\\projectwerkbench\\PWS\\src\\shader_texture_stuff\\BillIcon.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("C:path\\to\\shader_texture_stuff\\BillIcon.png", &width, &height, &nrChannels, 0);
     if (data)
     {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
