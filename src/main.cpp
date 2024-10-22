@@ -8,7 +8,7 @@
 
 #include <GLFW/glfw3.h>
 #include "../src/shader_texture_stuff/shaderCode_s.h"
-#include "../src/camera_class.h"
+#include "../src/shader_texture_stuff/camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "shader_texture_stuff/stb_image.h"
 
