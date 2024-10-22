@@ -1,5 +1,6 @@
 {
     "files.associations": {
+<<<<<<< HEAD
         "algorithm": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -8,6 +9,19 @@
         "cmath": "cpp",
         "compare": "cpp",
         "concepts": "cpp",
+=======
+        "__bit_reference": "cpp",
+        "__config": "cpp",
+        "__locale": "cpp",
+        "__threading_support": "cpp",
+        "__verbose_abort": "cpp",
+        "bitset": "cpp",
+        "cctype": "cpp",
+        "clocale": "cpp",
+        "cmath": "cpp",
+        "complex": "cpp",
+        "cstdarg": "cpp",
+>>>>>>> 959fd96f8566fb744d368e5cab569eb5463939ce
         "cstddef": "cpp",
         "cstdint": "cpp",
         "cstdio": "cpp",
@@ -15,12 +29,21 @@
         "cstring": "cpp",
         "ctime": "cpp",
         "cwchar": "cpp",
+<<<<<<< HEAD
         "exception": "cpp",
         "initializer_list": "cpp",
+=======
+        "cwctype": "cpp",
+        "execution": "cpp",
+        "fstream": "cpp",
+        "initializer_list": "cpp",
+        "iomanip": "cpp",
+>>>>>>> 959fd96f8566fb744d368e5cab569eb5463939ce
         "ios": "cpp",
         "iosfwd": "cpp",
         "iostream": "cpp",
         "istream": "cpp",
+<<<<<<< HEAD
         "iterator": "cpp",
         "limits": "cpp",
         "memory": "cpp",
@@ -43,5 +66,22 @@
         "xstring": "cpp",
         "xtr1common": "cpp",
         "xutility": "cpp"
+=======
+        "limits": "cpp",
+        "locale": "cpp",
+        "mutex": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "sstream": "cpp",
+        "stdexcept": "cpp",
+        "streambuf": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "tuple": "cpp",
+        "typeinfo": "cpp",
+        "variant": "cpp",
+        "algorithm": "cpp"
+>>>>>>> 959fd96f8566fb744d368e5cab569eb5463939ce
     }
 }

@@ -39,8 +39,13 @@ add_subdirectory(glfw) # Adjust the path if necessary, assuming you put the GLFW
 # endif()
 
 # Add the executable
+<<<<<<< HEAD
 #add_executable(main src/main.cpp src/sugma.cpp src/ligma.cpp)
 add_executable(main src/sugma.cpp)
+=======
+add_executable(main src/ligma.cpp)
+
+>>>>>>> 959fd96f8566fb744d368e5cab569eb5463939ce
 
 
 # # Platform-specific settings
