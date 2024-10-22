@@ -1,12 +1,13 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <../glm/glm/glm.hpp>
 
 #ifdef _WIN32
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #elif defined(__APPLE__)
 #include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
 #endif
 
 #include <string>
