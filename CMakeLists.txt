@@ -55,9 +55,10 @@ add_executable(main src/sugma.cpp)
 
 
 if (WIN32)  # For Windows
-    target_include_directories(main PRIVATE glad/glad/include glfw/include include)
+    target_include_directories(main PRIVATE glad/glad/include glfw/include glm-0.9.8.5/glm include)
     target_link_libraries(main PRIVATE glfw glad OpenGL::GL opengl32)
 elseif(APPLE)  # For macOS
     target_include_directories(main PRIVATE glfw/include include)
     target_link_libraries(main PRIVATE glfw "-framework OpenGL" "-framework Cocoa" "-framework IOKit" "-framework CoreVideo")
 endif()
+
