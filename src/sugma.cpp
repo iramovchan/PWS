@@ -1,10 +1,21 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <iostream>
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#define GLFW_INCLUDE_GLCOREARB
 
+#ifdef _WIN32
+#include <glad/glad.h>  // GLAD for Windows
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#elif defined(__APPLE__)
+#include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
+#include <../../glm/glm/gtc/matrix_transform.hpp>
+#include <../../glm/glm/gtc/type_ptr.hpp>
+#endif
+
+#include <GLFW/glfw3.h>
+#include <iostream>
+
 
 #include "classes//stb_image.h"
 
@@ -62,6 +73,7 @@ int main()
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    #ifdef _WIN32
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -69,6 +81,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    #endif
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
     stbi_set_flip_vertically_on_load(true);

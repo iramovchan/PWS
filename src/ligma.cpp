@@ -2,22 +2,26 @@
 #define GLFW_INCLUDE_GLCOREARB
 #ifdef _WIN32
 #include <glad/glad.h>  // GLAD for Windows
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #elif defined(__APPLE__)
 #include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
+#include <../../glm/glm/gtc/matrix_transform.hpp>
+#include <../../glm/glm/gtc/type_ptr.hpp>
 #endif
 
 
 #include <GLFW/glfw3.h>
-#include "../src/shader_texture_stuff/shaderCode_s.h"
-#include "../src/shader_texture_stuff/camera.h"
+#include "../src/classes/shaderCode_s.h"
+#include "../src/classes/camera.h"
 #define STB_IMAGE_IMPLEMENTATION
-#include "shader_texture_stuff/stb_image.h"
+#include "classes/stb_image.h"
 
-#include <../../glm/glm/glm.hpp>
-#include <../../glm/glm/gtc/matrix_transform.hpp>
-#include <../../glm/glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+
 
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
