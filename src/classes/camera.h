@@ -1,8 +1,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-
-
 #ifdef _WIN32
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -11,9 +9,7 @@
 #include <OpenGL/gl3.h>  // macOS OpenGL
 #include <../../glm/glm/glm.hpp>
 #include <../../glm/glm/gtc/matrix_transform.hpp>
-
 #endif
-
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -59,6 +55,7 @@ public:
         Pitch = pitch;
         updateCameraVectors();
     }
+    
     // constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
@@ -80,13 +77,13 @@ public:
     {
         float velocity = MovementSpeed * deltaTime;
         if (direction == FORWARD)
-            Position += Front * velocity;
+            Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;  // Limit to x and z axis
         if (direction == BACKWARD)
-            Position -= Front * velocity;
+            Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity; // Limit to x and z axis
         if (direction == LEFT)
-            Position -= Right * velocity;
+            Position -= glm::vec3(Right.x, 0.0f, Right.z) * velocity; // Limit to x and z axis
         if (direction == RIGHT)
-            Position += Right * velocity;
+            Position += glm::vec3(Right.x, 0.0f, Right.z) * velocity;  // Limit to x and z axis
         if (direction == UP)          // Added UP movement
             Position += WorldUp * velocity;
         if (direction == DOWN)        // Added DOWN movement

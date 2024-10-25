@@ -6,10 +6,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "shader_texture_stuff//stb_image.h"
-#include "shader_texture_stuff//camera.h"
-#include "shader_texture_stuff//shaderCode_s.h"
+#include "classes//stb_image.h"
+
+#include "classes//camera.h"
+#include "classes//shaderCode_s.h"
+// #include "classes//meshCode.h"
+// #include "classes//modelCode.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,7 +29,7 @@ float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
-float deltaTime = 0.0f;	// time between current frame and last frame
+float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
@@ -68,6 +70,9 @@ int main()
         return -1;
     }
 
+    // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
+    stbi_set_flip_vertically_on_load(true);
+
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
@@ -75,6 +80,8 @@ int main()
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("..\\..\\src\\shader_texture_stuff\\610cordinates.vs", "..\\..\\src\\shader_texture_stuff\\610cordinates.fs");
+    // Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
+    // Model ourModel("..\\..\\src\\backpack\\backpack.obj");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -225,12 +232,6 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
         // activate shader
         ourShader.use();
 
@@ -241,6 +242,12 @@ int main()
         // camera/view transformation
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
+
+        // bind textures on corresponding texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture2);
 
         // render boxes
         glBindVertexArray(VAO);
@@ -257,6 +264,13 @@ int main()
             
             glDrawArrays(GL_TRIANGLES, 0, 36);           
         }
+
+        // // render the loaded model
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        // model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        // ourShader.setMat4("model", model);
+        // ourModel.Draw(ourShader);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
