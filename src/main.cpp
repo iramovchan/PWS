@@ -30,7 +30,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 0.0f));
 float lastX = SCR_WIDTH / 2;
 float lastY = SCR_HEIGHT / 2;
 bool firstMouse = true;
@@ -133,6 +133,8 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         // model = glm::translate(model, objectPositions[0]);
         model = glm::rotate(model, glm::radians(85.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(5.0f));
+        
         ourShader.setMat4("model", model);
 
 
