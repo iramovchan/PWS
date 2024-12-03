@@ -236,12 +236,12 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        std::cout << "Actually loading texture from: " << filename << std::endl;
+        std::cout << "Loading texture from: " << filename << std::endl;
         stbi_image_free(data);
     }
     else
     {
-        std::cout << "Loading texture from: " << filename << std::endl;
+        std::cout << "Failed to load texture from: " << filename << std::endl;
         stbi_image_free(data);
     }
 

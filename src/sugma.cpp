@@ -93,7 +93,7 @@ int main()
     // ------------------------------------
     // Shader ourShader("..\\..\\src\\shader_texture_stuff\\610cordinates.vs", "..\\..\\src\\shader_texture_stuff\\610cordinates.fs");
     Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
-    Model ourModel("..\\..\\src\\backpack\\backpack.obj");
+    Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
 
     // // set up vertex data (and buffer(s)) and configure vertex attributes
     // // ------------------------------------------------------------------
