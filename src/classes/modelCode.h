@@ -62,7 +62,7 @@ private:
         }
         
         // Retrieve the directory path without the .obj filename
-        directory = path.substr(0, path.find_last_of("\\"));  // works for both Windows and Unix file separators
+        directory = path.substr(0, path.find_last_of("\\/"));  // works for both Windows and Unix file separators
         // Process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
     }
@@ -93,7 +93,6 @@ private:
         vector<Vertex> vertices;
         vector<unsigned int> indices;
         vector<Texture> textures;
-
         // walk through each of the mesh's vertices
         for(unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
@@ -132,10 +131,12 @@ private:
                 vector.z = mesh->mBitangents[i].z;
                 vertex.Bitangent = vector;
             }
-            else
+            else {
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-
+                }
             vertices.push_back(vertex);
+            std::cout << "Vertex " << i << ": TexCoords (" << vertex.TexCoords.x << ", " << vertex.TexCoords.y << ")" << std::endl;
+
         }
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
         for(unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -166,7 +167,7 @@ private:
         // 4. height maps
         std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-        
+
         // return a mesh object created from the extracted mesh data
         return Mesh(vertices, indices, textures);
     }
