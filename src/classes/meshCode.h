@@ -3,11 +3,15 @@
 
 #ifdef _WIN32
 #include <glad/glad.h> // holds all OpenGL type declarations
-#endif
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "shaderCode.h"
+#elif defined(__APPLE__)
+#include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
+#include <../../glm/glm/gtc/matrix_transform.hpp>
+#include "shaderCode.h"
+#endif
 
 #include <string>
 #include <vector>

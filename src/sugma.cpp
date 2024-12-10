@@ -1,3 +1,5 @@
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#define GLFW_INCLUDE_GLCOREARB
 #ifdef _WIN32
 #include <glad/glad.h>  // GLAD for Windows
 #include <glm/glm.hpp>

@@ -6,6 +6,9 @@ project(MyOpenGLProject VERSION 1.0)
 # Find OpenGL
 find_package(OpenGL REQUIRED)
 
+set(CMAKE_CXX_STANDARD 11)  # Or 14, 17, etc.
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if (WIN32)  # For Windows
     add_library(glad STATIC glad/glad/src/glad.c)
     target_include_directories(glad PUBLIC glad/glad/include)

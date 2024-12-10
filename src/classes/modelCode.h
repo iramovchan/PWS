@@ -1,10 +1,18 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <glad/glad.h> 
-
+#ifdef _WIN32
+#include <glad/glad.h> // holds all OpenGL type declarations
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "shaderCode.h"
+#elif defined(__APPLE__)
+#include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
+#include <../../glm/glm/gtc/matrix_transform.hpp>
+#include "shaderCode.h"
+#endif
+
 #include "stb_image.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
