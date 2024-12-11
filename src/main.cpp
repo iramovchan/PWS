@@ -12,14 +12,25 @@
 #include <../../glm/glm/gtc/type_ptr.hpp>
 #endif
 
+// #include <GLFW/glfw3.h>
+// #include "../src/classes/shaderCode_s.h"
+// #include "../src/classes/camera.h"
+// #define STB_IMAGE_IMPLEMENTATION
+// #include "classes/stb_image.h"
+
 #include <GLFW/glfw3.h>
-#include "../src/classes/shaderCode_s.h"
-#include "../src/classes/camera.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "classes/stb_image.h"
-
-
 #include <iostream>
+
+
+#include "classes//stb_image.h"
+
+#include "classes//camera.h"
+#include "classes//shaderCode_s.h"
+#include "classes//meshCode.h"
+#include "classes//modelCode.h"
+
+
+// #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -61,7 +72,7 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback); 
     glfwSetScrollCallback(window, scroll_callback);  
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     #ifdef _WIN32
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -72,7 +83,13 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader ourShader("../src/shader_texture_stuff/330shader.vs", "../src/shader_texture_stuff/330shader.fs");
+    // Shader ourShader("../src/shader_texture_stuff/330shader.vs", "../src/shader_texture_stuff/330shader.fs");
+
+    Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
+    // Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+    // Model ourModel("../src/backpack/backpack.obj");
+    Model ourModel("../src/car_model/ultrsalowpolycar.obj");
+
 
     float vertices[] = {
         // positions          // texture coords
@@ -129,16 +146,28 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
-        glBindVertexArray(VAO);
-        glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, objectPositions[0]);
-        model = glm::rotate(model, glm::radians(85.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(5.0f));
+        // glBindVertexArray(VAO);
+        // glm::mat4 model = glm::mat4(1.0f);
+        // // model = glm::translate(model, objectPositions[0]);
+        // model = glm::rotate(model, glm::radians(85.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        // model = glm::scale(model, glm::vec3(5.0f));
         
-        ourShader.setMat4("model", model);
+        // ourShader.setMat4("model", model);
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
+        glBindVertexArray(VAO);
+        glm::mat4 cubeModel = glm::mat4(1.0f);
+        cubeModel = glm::translate(cubeModel, glm::vec3(-2.0f, 0.0f, 0.0f)); // Move the cube to the left
+        cubeModel = glm::scale(cubeModel, glm::vec3(1.0f));                  // Adjust the size of the cube
+        ourShader.setMat4("model", cubeModel);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // Render the 3D model
+        glm::mat4 modelModel = glm::mat4(1.0f);
+        modelModel = glm::translate(modelModel, glm::vec3(2.0f, 0.0f, 0.0f)); // Move the model to the right
+        modelModel = glm::scale(modelModel, glm::vec3(0.5f));                 // Adjust the size of the model
+        ourShader.setMat4("model", modelModel);
+        ourModel.Draw(ourShader); // Assuming Model has a Draw function that takes the shader
 
         glfwSwapBuffers(window);
         glfwPollEvents();

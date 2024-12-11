@@ -6,8 +6,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #elif defined(__APPLE__)
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#define GLFW_INCLUDE_GLCOREARB
 #include <OpenGL/gl3.h>  // macOS OpenGL
 #include <../../glm/glm/glm.hpp>
 #include <../../glm/glm/gtc/matrix_transform.hpp>
@@ -35,7 +33,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 0.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -94,8 +92,17 @@ int main()
     // build and compile our shader zprogram
     // ------------------------------------
     // Shader ourShader("..\\..\\src\\shader_texture_stuff\\610cordinates.vs", "..\\..\\src\\shader_texture_stuff\\610cordinates.fs");
-    Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
-    Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+    // Shader ourShader("..\\src\\shader_texture_stuff\\model_loading.vs", "..\\src\\shader_texture_stuff\\model_loading.fs");
+    // Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+
+    #ifdef _WIN32
+        Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
+        Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+    #elif __APPLE__
+        Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
+        Model ourModel("../src/backpack/backpack.obj");
+    #endif
+
 
     // // set up vertex data (and buffer(s)) and configure vertex attributes
     // // ------------------------------------------------------------------
@@ -279,10 +286,16 @@ int main()
         //     glDrawArrays(GL_TRIANGLES, 0, 36);           
         // }
 
+        glm::mat4 projection = glm::mat4(1.0f);
+        projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+        ourShader.setMat4("projection", projection);
+        glm::mat4 view = camera.GetViewMatrix();
+        ourShader.setMat4("view", view);
+
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+        model = glm::scale(model, glm::vec3(0.5f));	// it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
