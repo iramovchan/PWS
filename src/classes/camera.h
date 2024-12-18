@@ -23,7 +23,7 @@ enum Camera_Movement {
 
 // Default camera values
 const float YAW         = -90.0f;
-const float PITCH       =  -60.0f;
+const float PITCH       =  -30.0f;
 const float SPEED       =  2.5f;
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
@@ -137,5 +137,6 @@ private:
         Up    = glm::normalize(glm::cross(Right, Front));
     }
 };
+
 
 #endif
