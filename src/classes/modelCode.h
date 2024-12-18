@@ -143,7 +143,7 @@ private:
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
                 }
             vertices.push_back(vertex);
-            std::cout << "Vertex " << i << ": TexCoords (" << vertex.TexCoords.x << ", " << vertex.TexCoords.y << ")" << std::endl;
+            // std::cout << "Vertex " << i << ": TexCoords (" << vertex.TexCoords.x << ", " << vertex.TexCoords.y << ")" << std::endl;
 
         }
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.

@@ -22,16 +22,19 @@ add_subdirectory(external/assimp)
 add_executable(main 
     src/sugma.cpp
     src/classes/stb_image.cpp
+    src/text.cpp
 )
 
 # Set the source directory (if needed for other configurations)
 set (source_dir "${PROJECT_SOURCE_DIR}/src/")
 
 # Include directories and link libraries for Windows
+# Include directories and link libraries for Windows
 if (WIN32)
     target_include_directories(main PRIVATE 
         glad/glad/include 
         glfw/include 
+        ft2133/freetype-2.13.3/include
         external/assimp/include 
         glm-0.9.8.5/glm 
         include
