@@ -21,8 +21,8 @@ add_subdirectory(external/freetype)
 
 # Add the executable
 add_executable(main 
-    # src/sugma.cpp
-    src/text.cpp
+    src/sugma.cpp
+    # src/text.cpp
     src/classes/stb_image.cpp
 )
 
