@@ -98,7 +98,7 @@ int main()
     }
 
 	// find path to font
-    std::string font_name = "..\\..\\src\\fonts\\test2.ttf";
+    std::string font_name = "..\\..\\src\\fonts\\comic.ttf";
     if (font_name.empty())
     {
         std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
