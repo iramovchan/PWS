@@ -222,6 +222,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         filename = directory + '\\' + filename;
     #elif __APPLE__
         filename = directory + '/' + filename;
+        std::cout << filename << std::endl;
     #endif
 
     unsigned int textureID;
