@@ -10,6 +10,7 @@
 #include <../../glm/glm/glm.hpp>
 #include <../../glm/glm/gtc/matrix_transform.hpp>
 #include <../../glm/glm/gtc/type_ptr.hpp>
+#include <../../external/freetype/include/ft2build.h>
 #endif
 
 #include <GLFW/glfw3.h>
@@ -17,7 +18,7 @@
 #include <map>
 #include <string>
 
-#include <ft2build.h>
+// #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "textShader.h"
