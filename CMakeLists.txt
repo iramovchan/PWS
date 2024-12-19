@@ -17,12 +17,13 @@ endif()
 # Add GLFW and Assimp as subdirectories
 add_subdirectory(glfw)
 add_subdirectory(external/assimp)
+add_subdirectory(external/freetype)
 
 # Add the executable
 add_executable(main 
-    src/sugma.cpp
-    src/classes/stb_image.cpp
+    # src/sugma.cpp
     src/text.cpp
+    src/classes/stb_image.cpp
 )
 
 # Set the source directory (if needed for other configurations)
@@ -34,7 +35,7 @@ if (WIN32)
     target_include_directories(main PRIVATE 
         glad/glad/include 
         glfw/include 
-        ft2133/freetype-2.13.3/include
+        external/freetype/include 
         external/assimp/include 
         glm-0.9.8.5/glm 
         include
@@ -45,6 +46,7 @@ if (WIN32)
         OpenGL::GL 
         opengl32 
         assimp
+        freetype
     )
     
 # Include directories and link libraries for macOS

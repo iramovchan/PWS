@@ -1,13 +1,21 @@
-#include <iostream>
-#include <map>
-#include <string>
-
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
+#ifdef _WIN32
+#include <glad/glad.h>  // GLAD for Windows
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#elif defined(__APPLE__)
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#define GLFW_INCLUDE_GLCOREARB
+#include <OpenGL/gl3.h>  // macOS OpenGL
+#include <../../glm/glm/glm.hpp>
+#include <../../glm/glm/gtc/matrix_transform.hpp>
+#include <../../glm/glm/gtc/type_ptr.hpp>
+#endif
+
+#include <GLFW/glfw3.h>
+#include <iostream>
+#include <map>
+#include <string>
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -74,7 +82,7 @@ int main()
     
     // compile and setup the shader
     // ----------------------------
-    Shader shader("text.vs", "text.fs");
+    Shader shader("..\\..\\src\\shader_texture_stuff\\text.vs", "..\\..\\src\\shader_texture_stuff\\text.fs");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
     shader.use();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -90,7 +98,7 @@ int main()
     }
 
 	// find path to font
-    std::string font_name = "resources/fonts/Antonio-Bold.ttf";
+    std::string font_name = "..\\..\\src\\fonts\\test2.ttf";
     if (font_name.empty())
     {
         std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
