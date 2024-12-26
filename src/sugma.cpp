@@ -119,9 +119,12 @@ int main()
         Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
         Shader shader("..\\..\\src\\shader_texture_stuff\\text.vs", "..\\..\\src\\shader_texture_stuff\\text.fs");
         Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+        std::string font_name = "..\\..\\src\\fonts\\comic.ttf";
     #elif __APPLE__
         Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
+        Shader shader("../../src/shader_texture_stuff/text.vs", "../../src/shader_texture_stuff/text.fs");
         Model ourModel("../src/backpack/backpack.obj");
+        std::string font_name = "../../src/fonts/comic.ttf";
     #endif
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
     shader.use();
@@ -137,8 +140,6 @@ int main()
         return -1;
     }
 
-	// find path to font
-    std::string font_name = "..\\..\\src\\fonts\\comic.ttf";
     if (font_name.empty())
     {
         std::cout << "ERROR::FREETYPE: Failed to load font_name" << std::endl;
@@ -237,12 +238,10 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 0.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
         RenderText(shader, "pfs", 540.0f, 570.0f, 1.0f, glm::vec3(0.3, 0.7f, 0.9f));
-       
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
         // activate shader
         ourShader.use();
