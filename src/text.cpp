@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ft2build.h>
 #elif defined(__APPLE__)
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #define GLFW_INCLUDE_GLCOREARB
@@ -18,7 +19,6 @@
 #include <map>
 #include <string>
 
-// #include <ft2build.h>
 #include FT_FREETYPE_H
 
 #include "textShader.h"

@@ -108,7 +108,7 @@ int main()
         Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
     #elif __APPLE__
         Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
-        Model ourModel("../src/characterModel/hairGirl1.obj");
+        Model ourModel("../src/characterModel/hairGirl2.obj");
     #endif
 
     // render loop

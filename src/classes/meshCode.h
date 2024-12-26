@@ -79,27 +79,19 @@ public:
 
             if(name == "texture_diffuse") {
                 number = std::to_string(diffuseNr);  // Get current number
-                // std::cout << "diffuseNr before: " << diffuseNr << std::endl;
                 diffuseNr++;  // Increment after assigning number
-                // std::cout << "diffuseNr after: " << diffuseNr << std::endl;
             } 
             else if(name == "texture_specular") {
                 number = std::to_string(specularNr); 
-                // std::cout << "specularNr before: " << specularNr << std::endl;
                 specularNr++; 
-                // std::cout << "specularNr after: " << specularNr << std::endl;
             } 
             else if(name == "texture_normal") {
                 number = std::to_string(normalNr); 
-                // std::cout << "normalNr before: " << normalNr << std::endl;
                 normalNr++; 
-                // std::cout << "normalNr after: " << normalNr << std::endl;
             } 
             else if(name == "texture_height") {
                 number = std::to_string(heightNr); 
-                // std::cout << "heightNr before: " << heightNr << std::endl;
                 heightNr++; 
-                // std::cout << "heightNr after: " << heightNr << std::endl;
             }
 
             // Now set the sampler to the correct texture unit
