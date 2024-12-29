@@ -1,6 +1,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace)
+
 #ifdef _WIN32
 #include <glad/glad.h> // holds all OpenGL type declarations
 #include <glm/glm.hpp>
@@ -20,6 +22,8 @@
 
 #include "shaderCode.h"
 #include "meshCode.h"
+#include "animdata.h"
+#include "assimp_glm_helpers.h"
 
 #include <string>
 #include <fstream>
@@ -52,25 +56,32 @@ public:
         for(unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
+
+    auto& GetBoneInfoMap() { return m_BoneInfoMap; }
+    int& GetBoneCount() { return m_BoneCounter; }
     
 private:
+    std::map<string, BoneInfo> m_BoneInfoMap;
+    int m_BoneCounter = 0;
+
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(string const &path)
     {
         // Read file via ASSIMP
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        const aiScene* scene = importer.ReadFile(path, ASSIMP_LOAD_FLAGS);
         
         // Check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-        return;
+            std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+            return;
         } else {
             std::cout << "Model loaded successfully: " << path << std::endl;
         }
         
         // Retrieve the directory path without the .obj filename
         directory = path.substr(0, path.find_last_of("\\/"));  // works for both Windows and Unix file separators
+        std::cout << directory << std::endl;
         // Process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
     }
@@ -95,6 +106,15 @@ private:
 
     }
 
+    void SetVertexBoneDataToDefault(Vertex& vertex)
+    {
+        for(int i = 0; i < MAX_BONE_INFLUENCE; i++)
+        {
+            vertex.m_BoneIDs[i] = -1;
+            vertex.m_Weights[i] = 0.0f;
+        }
+    }
+
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // data to fill
@@ -105,44 +125,60 @@ private:
         for(unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
             Vertex vertex;
-            glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
-            // positions
-            vector.x = mesh->mVertices[i].x;
-            vector.y = mesh->mVertices[i].y;
-            vector.z = mesh->mVertices[i].z;
-            vertex.Position = vector;
-            // normals
-            if (mesh->HasNormals())
-            {
-                vector.x = mesh->mNormals[i].x;
-                vector.y = mesh->mNormals[i].y;
-                vector.z = mesh->mNormals[i].z;
-                vertex.Normal = vector;
-            }
-            // texture coordinates
-            if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            SetVertexBoneDataToDefault(vertex);
+            vertex.Position = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
+            vertex.Normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
+            
+            if (mesh->mTextureCoords[0])
             {
                 glm::vec2 vec;
-                // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
-                // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-                vec.x = mesh->mTextureCoords[0][i].x; 
+                vec.x = mesh->mTextureCoords[0][i].x;
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
-                // tangent
-                vector.x = mesh->mTangents[i].x;
-                vector.y = mesh->mTangents[i].y;
-                vector.z = mesh->mTangents[i].z;
-                vertex.Tangent = vector;
-                // bitangent
-                vector.x = mesh->mBitangents[i].x;
-                vector.y = mesh->mBitangents[i].y;
-                vector.z = mesh->mBitangents[i].z;
-                vertex.Bitangent = vector;
             }
-            else {
+            else
+            {
                 vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-                }
+            }
             vertices.push_back(vertex);
+            // glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+            // // positions
+            // vector.x = mesh->mVertices[i].x;
+            // vector.y = mesh->mVertices[i].y;
+            // vector.z = mesh->mVertices[i].z;
+            // vertex.Position = vector;
+            // // normals
+            // if (mesh->HasNormals())
+            // {
+            //     vector.x = mesh->mNormals[i].x;
+            //     vector.y = mesh->mNormals[i].y;
+            //     vector.z = mesh->mNormals[i].z;
+            //     vertex.Normal = vector;
+            // }
+            // // texture coordinates
+            // if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            // {
+            //     glm::vec2 vec;
+            //     // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
+            //     // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+            //     vec.x = mesh->mTextureCoords[0][i].x; 
+            //     vec.y = mesh->mTextureCoords[0][i].y;
+            //     vertex.TexCoords = vec;
+            //     // tangent
+            //     vector.x = mesh->mTangents[i].x;
+            //     vector.y = mesh->mTangents[i].y;
+            //     vector.z = mesh->mTangents[i].z;
+            //     vertex.Tangent = vector;
+            //     // bitangent
+            //     vector.x = mesh->mBitangents[i].x;
+            //     vector.y = mesh->mBitangents[i].y;
+            //     vector.z = mesh->mBitangents[i].z;
+            //     vertex.Bitangent = vector;
+            // }
+            // else {
+            //     vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+            //     }
+            // vertices.push_back(vertex);
             // std::cout << "Vertex " << i << ": TexCoords (" << vertex.TexCoords.x << ", " << vertex.TexCoords.y << ")" << std::endl;
 
         }
@@ -176,8 +212,58 @@ private:
         std::vector<Texture> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
         textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
+        ExtractBoneWeightForVertices(vertices, mesh, scene);
         // return a mesh object created from the extracted mesh data
         return Mesh(vertices, indices, textures);
+    }
+
+    void SetVertexBoneData(Vertex& vertex, int boneID, float weight)
+    {
+        for (int i = 0; i < MAX_BONE_INFLUENCE; ++i)
+        {
+            if (vertex.m_BoneIDs[i] < 0)
+            {
+                vertex.m_Weights[i] = weight;
+                vertex.m_BoneIDs[i] = boneID;
+                break;
+            }
+        }
+    }
+
+    void ExtractBoneWeightForVertices(std::vector<Vertex>& vertices, aiMesh* mesh, const aiScene* scene)
+    {
+        auto& boneInfoMap = m_BoneInfoMap;
+        int& boneCount = m_BoneCounter;
+
+        for(int boneIndex = 0; boneIndex < mesh->mNumBones; ++ boneIndex)
+        {
+            int boneID = -1;
+            std::string boneName = mesh->mBones[boneIndex]->mName.C_Str();
+            if (boneInfoMap.find(boneName) == boneInfoMap.end())
+            {
+                BoneInfo newBoneInfo;
+                newBoneInfo.id = boneCount;
+                newBoneInfo.offset = AssimpGLMHelpers::ConvertMatrixToGLMFormat(mesh->mBones[boneIndex]->mOffsetMatrix);
+                boneInfoMap[boneName] = newBoneInfo;
+                boneID = boneCount;
+                boneCount++;
+            }
+            else
+            {
+                boneID = boneInfoMap[boneName].id;
+            }
+            assert(boneID != -1);
+            auto weights = mesh->mBones[boneIndex]->mWeights;
+            int numWeights = mesh->mBones[boneIndex]->mNumWeights;
+
+            for (int weightIndex = 0; weightIndex < numWeights; ++weightIndex)
+            {
+                int vertexID = weights[weightIndex].mVertexId;
+                float weight = weights[weightIndex].mWeight;
+                assert(vertexID <= vertices.size());
+                SetVertexBoneData(vertices[vertexID], boneID, weight);
+            }
+        }
     }
 
     // checks all material textures of a given type and loads the textures if they're not loaded yet.
@@ -217,13 +303,29 @@ private:
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma)
 {
-    string filename = string(path);
-    #ifdef _WIN32
-        filename = directory + '\\' + filename;
-    #elif __APPLE__
-        filename = directory + '/' + filename;
-        std::cout << filename << std::endl;
-    #endif
+    std::string filename;
+
+        // Check if the provided path is already absolute
+    if (path[0] == '/' || (path[1] == ':' && path[2] == '\\')) { 
+        // For Unix-like systems or absolute Windows paths (e.g., "C:\")
+        filename = std::string(path);
+        
+    }
+    else {
+        #ifdef _WIN32
+            filename = directory + '\\' + std::string(path);
+        #elif __APPLE__
+            filename = directory + '/' + std::string(path);
+        #endif
+    }
+    std::cout << filename << std::endl;
+
+    // #ifdef _WIN32
+    //     filename = directory + '\\' + filename;
+    // #elif __APPLE__
+    //     filename = directory + '/' + filename;
+    //     std::cout << filename << std::endl;
+    // #endif
 
     unsigned int textureID;
     glGenTextures(1, &textureID);

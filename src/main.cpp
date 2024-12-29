@@ -22,6 +22,7 @@
 #include "classes//shaderCode_s.h"
 #include "classes//meshCode.h"
 #include "classes//modelCode.h"
+#include "classes//animator.h"
 
 static void GLClearError()
 {
@@ -46,8 +47,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-// camera
-Camera camera(glm::vec3(0.0f, 2.0f, 0.0f));
+// camera | left/right | up/down | forward/backward
+Camera camera(glm::vec3(0.0f, 1.0f, 2.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -104,11 +105,19 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     #ifdef _WIN32
-        Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
+        Shader ourShader("..\\..\\src\\shader_texture_stuff\\animated_model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
         Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
     #elif __APPLE__
-        Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
-        Model ourModel("../src/characterModel/hairGirl2.obj");
+        Shader ourShader("../src/shader_texture_stuff/animated_model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
+        // Model ourModel("../src/characterModel/hairGirl2.obj");
+        Model ourModel("../src/AnimatedCharacterModel/model_idle.dae");
+        Animation idleAnimCharac("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
+        Animator animator(&idleAnimCharac);
+        Model gunModel("../src/AnimatedCharacterModel/gun_idle.dae");
+        // Animation idleAnimGun("../src/AnimatedCharacterModel/gun_idle.dae", &gunModel);
+        // Animator gun_animator(&idleAnimGun);
+        // Model ourModel("../src/dancingGuy/dancing_vampire.dae");
+        // Animation idleAnimation("../src/dancingGuy/dancing_vampire.dae", &ourModel);
     #endif
 
     // render loop
@@ -124,6 +133,9 @@ int main()
         // input
         // -----
         processInput(window);
+        animator.UpdateAnimation(deltaTime);
+        // gun_animator.UpdateAnimation(deltaTime);
+
 
         // render
         // ------
@@ -133,18 +145,64 @@ int main()
         // activate shader
         ourShader.use();
 
+        
+
         glm::mat4 projection = glm::mat4(1.0f);
         projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
         ourShader.setMat4("projection", projection);
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
-        // render the loaded model
+        auto transforms = animator.GetFinalBoneMatrices();
+        for (int i = 0; i < transforms.size(); ++i)
+        {
+            ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
+        }
+
+
+         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
+        // ?? / updown / ??
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        // model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         model = glm::scale(model, glm::vec3(0.5f));	// it's a bit too big for our scene, so scale it down
+        // std::vector<glm::mat4> finalMatrices1 = animator.GetFinalBoneMatrices();
+        // ourShader.setMat4Array("finalBonesMatrices", finalMatrices1);
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
+
+        
+
+        // For Model 1
+        
+        // ourShader.setMat4("model", model); // Model 1 specific matrix
+        // renderModel(ourModel, ourShader); // Function to render Model 1
+
+        // glm::mat4 gunModelMatrix = glm::mat4(1.0f);
+        // gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
+        // gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.5f));                 // Adjust scale
+
+        // // std::vector<glm::mat4> finalMatrices2 = gun_animator.GetFinalBoneMatrices();
+        // // ourShader.setMat4Array("finalBonesMatrices", finalMatrices2);
+        // ourShader.setMat4("model", gunModelMatrix);
+        // gunModel.Draw(ourShader);
+
+        // For Model 2
+        
+        // ourShader.setMat4("model", newModelMatrix); // Model 2 specific matrix
+        // renderModel(gunModel, ourShader,); // Function to render Model 2
+
+
+        
+       
+        // auto gun_transforms = gun_animator.GetFinalBoneMatrices();
+        // for (int i = 0; i < gun_transforms.size(); ++i)
+        // {
+        //     ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", gun_transforms[i]);
+        // }
+
+
+        
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -226,3 +284,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
+
+// void renderModel(Model &model, Shader &shader, const glm::mat4 &modelMatrix)
+// {
+//     shader.setMat4("model", modelMatrix); // Set the model matrix for this model
+//     model.Draw(shader); // Render the model
+// }

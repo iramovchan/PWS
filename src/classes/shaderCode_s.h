@@ -14,6 +14,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 
 class Shader
 {
@@ -140,6 +141,15 @@ public:
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
+    void setMat4Array(const std::string &name, const std::vector<glm::mat4> &matrices)
+    {
+        for (size_t i = 0; i < matrices.size(); ++i)
+        {
+            std::string uniformName = name + "[" + std::to_string(i) + "]";
+            glUniformMatrix4fv(glGetUniformLocation(ID, uniformName.c_str()), 1, GL_FALSE, glm::value_ptr(matrices[i]));
+        }
+    }
+
 
 private:
     // utility function for checking shader compilation/linking errors.
