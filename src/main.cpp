@@ -112,15 +112,16 @@ int main()
         Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
     #elif __APPLE__
         Shader ourShader("../src/shader_texture_stuff/animated_model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
-        Model ourModel("../src/AnimatedCharacterModel/model_idle.dae");
-        Animation idleAnimCharac("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
-        Animator animator(&idleAnimCharac);
+        
         Model gunModel("../src/gunAnimated/gun_idle.dae");
         Animation idleAnimGun("../src/gunAnimated/gun_idle.dae", &gunModel);
         Animator gun_animator(&idleAnimGun);
-        // Model guyModel("../src/dancingGuy/dancing_vampire.dae");
-        // Animation idleAnimation("../src/dancingGuy/dancing_vampire.dae", &ourModel);
-        // Animator guy_animator(&idleAnimation);
+        Model guyModel("../src/dancingGuy/dancing_vampire.dae");
+        Animation idleAnimation("../src/dancingGuy/dancing_vampire.dae", &guyModel);
+        Animator guy_animator(&idleAnimation);
+        Model ourModel("../src/AnimatedCharacterModel/model_idle.dae");
+        Animation idleAnimCharac("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
+        Animator animator(&idleAnimCharac);
     #endif
     // render loop
     // -----------
@@ -135,14 +136,16 @@ int main()
         // input
         // -----
         processInput(window);
-        animator.UpdateAnimation(deltaTime);
         gun_animator.UpdateAnimation(deltaTime);
-
+        guy_animator.UpdateAnimation(deltaTime);
+        animator.UpdateAnimation(deltaTime);
+        
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
+        
         // activate shader
         ourShader.use();
 
@@ -152,6 +155,32 @@ int main()
         ourShader.setMat4("projection", projection);
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
+
+
+        auto gun_transforms = gun_animator.GetFinalBoneMatrices();
+        for (int i = 0; i < gun_transforms.size(); ++i)
+        {
+            ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", gun_transforms[i]);
+        }
+
+        glm::mat4 gunModelMatrix = glm::mat4(1.0f);
+        gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
+        gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.5f));                 // Adjust scale
+        ourShader.setMat4("model", gunModelMatrix);
+        gunModel.Draw(ourShader);
+
+
+        auto guy_transforms = guy_animator.GetFinalBoneMatrices();
+        for (int i = 0; i < guy_transforms.size(); ++i)
+        {
+            ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", guy_transforms[i]);
+        }
+
+        glm::mat4 guyModelMatrix = glm::mat4(1.0f);
+        guyModelMatrix = glm::translate(guyModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
+        guyModelMatrix = glm::scale(guyModelMatrix, glm::vec3(0.5f));                 // Adjust scale
+        ourShader.setMat4("model", guyModelMatrix);
+        guyModel.Draw(ourShader);
 
         auto transforms = animator.GetFinalBoneMatrices();
         for (int i = 0; i < transforms.size(); ++i)
@@ -167,17 +196,6 @@ int main()
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
-        auto gun_transforms = gun_animator.GetFinalBoneMatrices();
-        for (int i = 0; i < gun_transforms.size(); ++i)
-        {
-            ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", gun_transforms[i]);
-        }
-
-        glm::mat4 gunModelMatrix = glm::mat4(1.0f);
-        gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
-        gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.5f));                 // Adjust scale
-        ourShader.setMat4("model", gunModelMatrix);
-        gunModel.Draw(ourShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
