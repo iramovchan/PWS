@@ -14,7 +14,8 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include <map>
+#include <string>
 
 #include "classes//stb_image.h"
 
@@ -60,6 +61,12 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+std::map<std::string, Animation*> model_animations;
+std::map<std::string, Animation*> gun_animations;
+
+Animator* currentAnimatorModel = new Animator(model_animations["idle"]);
+Animator* currentAnimatorGun = new Animator(gun_animations["idle"]);
+
 int main()
 {
     // glfw: initialize and configure
@@ -101,7 +108,7 @@ int main()
     #endif
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    stbi_set_flip_vertically_on_load(true);
+    // stbi_set_flip_vertically_on_load(true);
 
     // configure global opengl state
     // -----------------------------
@@ -114,15 +121,24 @@ int main()
         Shader ourShader("../src/shader_texture_stuff/animated_model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");
         
         Model gunModel("../src/gunAnimated/gun_idle.dae");
-        Animation idleAnimGun("../src/gunAnimated/gun_idle.dae", &gunModel);
-        Animator gun_animator(&idleAnimGun);
+        gun_animations["idle"] = new Animation("../src/gunAnimated/gun_idle.dae", &gunModel);
+        gun_animations["reload"] = new Animation("../src/gunAnimated/gun_reload.dae", &gunModel);
+        // Animation idleAnimGun("../src/gunAnimated/gun_idle.dae", &gunModel);
+        // Animator gun_animator(&idleAnimGun);
         Model guyModel("../src/dancingGuy/dancing_vampire.dae");
         Animation idleAnimation("../src/dancingGuy/dancing_vampire.dae", &guyModel);
         Animator guy_animator(&idleAnimation);
         Model ourModel("../src/AnimatedCharacterModel/model_idle.dae");
-        Animation idleAnimCharac("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
-        Animator animator(&idleAnimCharac);
+        model_animations["idle"] = new Animation("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
+        model_animations["reload"] = new Animation("../src/AnimatedCharacterModel/model_reload.dae", &ourModel);
+        // Animation idleAnimCharac("../src/AnimatedCharacterModel/model_idle.dae", &ourModel);
+        // Animator animator(&idleAnimCharac);
+        Model enemyModel("../src/enemy/source/poza.fbx");
+        // Animation idleAnimCharac("../src/enemy/source/poza.fbx", &enemyModel);
+        // Animator enemyAnimator(&idleAnimCharac);
+        
     #endif
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -136,9 +152,13 @@ int main()
         // input
         // -----
         processInput(window);
-        gun_animator.UpdateAnimation(deltaTime);
+
+        currentAnimatorModel->UpdateAnimation(deltaTime);
+        currentAnimatorGun->UpdateAnimation(deltaTime);
+
+        // gun_animator.UpdateAnimation(deltaTime);
         guy_animator.UpdateAnimation(deltaTime);
-        animator.UpdateAnimation(deltaTime);
+        // animator.UpdateAnimation(deltaTime);
         
         // render
         // ------
@@ -157,13 +177,15 @@ int main()
         ourShader.setMat4("view", view);
 
 
-        auto gun_transforms = gun_animator.GetFinalBoneMatrices();
+        ourShader.setBool("isAnimated", true);
+        auto gun_transforms = currentAnimatorGun->GetFinalBoneMatrices();
         for (int i = 0; i < gun_transforms.size(); ++i)
         {
             ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", gun_transforms[i]);
         }
 
         glm::mat4 gunModelMatrix = glm::mat4(1.0f);
+        // gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.09f, 0.7f, -0.26f)); // Adjust position
         gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.0f, 0.0f, 0.0f)); // Adjust position
         gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.5f));                 // Adjust scale
         ourShader.setMat4("model", gunModelMatrix);
@@ -182,7 +204,7 @@ int main()
         ourShader.setMat4("model", guyModelMatrix);
         guyModel.Draw(ourShader);
 
-        auto transforms = animator.GetFinalBoneMatrices();
+        auto transforms = currentAnimatorModel->GetFinalBoneMatrices();
         for (int i = 0; i < transforms.size(); ++i)
         {
             
@@ -196,15 +218,49 @@ int main()
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
 
+        ourShader.setBool("isAnimated", false);
+
+        // render the loaded model
+        glm::mat4 enemyModelMatrix = glm::mat4(1.0f);
+        enemyModelMatrix = glm::translate(enemyModelMatrix, glm::vec3(0.0f, 0.0f, -1.0f)); // translate it down so it's at the center of the scene
+        enemyModelMatrix = glm::scale(enemyModelMatrix, glm::vec3(0.002f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", enemyModelMatrix);
+        enemyModel.Draw(ourShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    // Cleanup code
+    for (auto& anim : model_animations)
+    {
+        delete anim.second; // Free each Animation*
+    }
+    for (auto& anim : gun_animations)
+    {
+        delete anim.second; // Free each Animation*
+    }
+
+    delete currentAnimatorModel;
+    delete currentAnimatorGun;
+
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+}
+
+void SwitchAnimation(std::map<std::string, Animation*> animations, const std::string& animationName, Animator*& currentAnimator)
+{
+    if (animations.find(animationName) != animations.end())
+    {
+        delete currentAnimator; // Clean up the old animator
+        currentAnimator = new Animator(animations[animationName]);
+    }
+    else
+    {
+        std::cout << "Animation " << animationName << " not found!" << std::endl;
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -238,6 +294,15 @@ void processInput(GLFWwindow *window)
     //     camera.ProcessKeyboard(UP, deltaTime);
     // if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
     //     camera.ProcessKeyboard(DOWN, deltaTime);
+    if(glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+    {
+        SwitchAnimation(model_animations, "reload", currentAnimatorModel);
+        SwitchAnimation(gun_animations, "reload", currentAnimatorGun);
+    } else if(glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+    {
+        SwitchAnimation(model_animations, "idle", currentAnimatorModel);
+        SwitchAnimation(gun_animations, "idle", currentAnimatorGun);
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
