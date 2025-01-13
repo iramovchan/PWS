@@ -1,5 +1,5 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef MODELCODE_H
+#define MODELCODE_H
 
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace)
 
@@ -44,6 +44,9 @@ public:
     string directory;
     bool gammaCorrection;
 
+    Model()
+    {}
+
     // constructor, expects a filepath to a 3D model.
     Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
     {
@@ -59,7 +62,28 @@ public:
 
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
     int& GetBoneCount() { return m_BoneCounter; }
+
+    std::vector<std::string> GetBoneNames() const {
+        std::vector<std::string> boneNames;
+        for (const auto& pair : m_BoneInfoMap) {
+            boneNames.push_back(pair.first);
+        }
+        return boneNames;
+    }
     
+    int GetBoneIndex(const std::string& boneName) const 
+    {
+        auto it = m_BoneInfoMap.find(boneName);
+        if (it != m_BoneInfoMap.end()) 
+        {
+            return it->second.id;  // Return the bone's index (id)
+        }
+        else 
+        {
+            std::cout << "Bone " << boneName << " not found!" << std::endl;
+            return -1;  // Return -1 if the bone is not found
+        }
+    }
 private:
     std::map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;
@@ -81,7 +105,6 @@ private:
         
         // Retrieve the directory path without the .obj filename
         directory = path.substr(0, path.find_last_of("\\/"));  // works for both Windows and Unix file separators
-        std::cout << directory << std::endl;
         // Process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene);
     }
@@ -318,7 +341,6 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
             filename = directory + '/' + std::string(path);
         #endif
     }
-    std::cout << filename << std::endl;
 
     // #ifdef _WIN32
     //     filename = directory + '\\' + filename;
@@ -351,7 +373,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        std::cout << "Loading texture from: " << filename << std::endl;
+        // std::cout << "Loading texture from: " << filename << std::endl;
         stbi_image_free(data);
     }
     else
@@ -362,4 +384,6 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 
     return textureID;
 }
+
+
 #endif
