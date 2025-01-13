@@ -23,10 +23,16 @@
 class Animator
 {
 public:
+
+	Animator ()
+	{}
+
 	Animator(Animation* animation)
 	{
 		m_CurrentTime = 0.0;
 		m_CurrentAnimation = animation;
+		m_PlayOnce = false;
+		m_HasFinished = false;
 
 		m_FinalBoneMatrices.reserve(100);
 
@@ -34,21 +40,56 @@ public:
 			m_FinalBoneMatrices.push_back(glm::mat4(1.0f));
 	}
 
-	void UpdateAnimation(float dt)
+	void UpdateAnimation(float dt, std::map<std::string, Animation*> animations, const std::string& fallbackAnimation, Animator*& currentAnimator)
 	{
+		// m_CurrentAnimation, 
 		m_DeltaTime = dt;
-		if (m_CurrentAnimation)
+		if (m_CurrentAnimation && !m_HasFinished)
 		{
 			m_CurrentTime += m_CurrentAnimation->GetTicksPerSecond() * dt;
+
+			if (m_PlayOnce && m_CurrentTime >= m_CurrentAnimation->GetDuration())
+			{
+				m_HasFinished = true;
+				m_CurrentTime = m_CurrentAnimation->GetDuration();
+				return;
+			}
 			m_CurrentTime = fmod(m_CurrentTime, m_CurrentAnimation->GetDuration());
 			CalculateBoneTransform(&m_CurrentAnimation->GetRootNode(), glm::mat4(1.0f));
 		}
+		else if (m_CurrentAnimation && m_PlayOnce && m_HasFinished)
+		{
+			
+			if (animations.find(fallbackAnimation) != animations.end())
+			{
+				currentAnimator->PlayAnimation(animations[fallbackAnimation], false);
+			}
+			else if (fallbackAnimation == "single")
+			{
+				m_HasFinished = false;
+				m_CurrentTime = 0.0f;
+			}
+			else
+			{
+				std::cout << "fallback animation was not found in animations" << std::endl;
+			}
+			
+
+		}
+		
 	}
 
-	void PlayAnimation(Animation* pAnimation)
+	void PlayAnimation(Animation* pAnimation, bool playOnce = false)
 	{
 		m_CurrentAnimation = pAnimation;
 		m_CurrentTime = 0.0f;
+		m_PlayOnce = playOnce;
+		m_HasFinished = false;
+	}
+
+	bool HasFinished() const
+	{
+		return m_HasFinished;
 	}
 
 	void CalculateBoneTransform(const AssimpNodeData* node, glm::mat4 parentTransform)
@@ -88,7 +129,8 @@ private:
 	Animation* m_CurrentAnimation;
 	float m_CurrentTime;
 	float m_DeltaTime;
-
+	bool m_PlayOnce;
+	bool m_HasFinished;
 };
 
 
