@@ -118,7 +118,7 @@ int main()
     #ifdef _WIN32
         Shader ourShader("..\\..\\src\\shader_texture_stuff\\model_loading.vs", "..\\..\\src\\shader_texture_stuff\\model_loading.fs");
         Shader shader("..\\..\\src\\shader_texture_stuff\\text.vs", "..\\..\\src\\shader_texture_stuff\\text.fs");
-        Model ourModel("..\\..\\src\\car_model\\ultrsalowpolycar.obj");
+        Model ourModel("..\\..\\src\\models\\car_model\\ultrsalowpolycar.obj");
         std::string font_name = "..\\..\\src\\fonts\\comic.ttf";
     #elif __APPLE__
         Shader ourShader("../src/shader_texture_stuff/model_loading.vs", "../src/shader_texture_stuff/model_loading.fs");

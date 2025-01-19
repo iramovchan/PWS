@@ -21,7 +21,7 @@
 
 #include FT_FREETYPE_H
 
-#include "textShader.h"
+#include "classes//textShader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);

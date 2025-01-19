@@ -25,9 +25,7 @@ add_executable(main
 
     src/main.cpp
     # src/text.cpp
-    # src/classes/rigidbody.cpp
     src/classes/stb_image.cpp
-    # src/classes/rigidbody.cpp
 )
 
 # Set the source directory (if needed for other configurations)

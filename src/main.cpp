@@ -190,12 +190,12 @@ int main()
         // Model gunModel("..\\src\\gunAnimated\\gun_idle.dae");
         // gun_animations["idle"] = new Animation("..\\src\\gunAnimated\\gun_idle.dae", &gunModel);
         // gun_animations["reload"] = new Animation("..\\src\\gunAnimated\\gun_reload.dae", &gunModel);
-        Model gunModel("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_idle.fbx");
+        Model gunModel("..\\src\\models_animated\\FPS_gun_animated\\fps_gun_idle.glb");
         
-        gun_animations["idle"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_idle.fbx", &gunModel);
-        gun_animations["reload"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_reload.fbx", &gunModel);
-        gun_animations["fire"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_fire.fbx", &gunModel);
-        gun_animations["walk"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_walk.fbx", &gunModel);
+        gun_animations["idle"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\fps_gun_idle.glb", &gunModel);
+        gun_animations["reload"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\fps_gun_reload.glb", &gunModel);
+        gun_animations["fire"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\fps_gun_fire.glb", &gunModel);
+        gun_animations["walk"] = new Animation("..\\src\\models_animated\\FPS_gun_animated\\fps_gun_walk.glb", &gunModel);
         // gun_animations["reload"] = new Animation("..\\src\\gunAnimated\\gun_reload.dae", &gunModel);
        
         // Model guyModel("..\\src\\dancingGuy\\dancing_vampire.dae");
@@ -203,17 +203,17 @@ int main()
         // Animation idleAnimation("..\\src\\dancingGuy\\dancing_vampire.dae", &guyModel);
         // Animator guy_animator(&idleAnimation);
         // Model ourModel("..\\src\\AnimatedCharacterModel\\model_idle.dae");
-        Model ourModel("..\\src\\models_animated\\FPS_arms_animated\\FPS_arms_idle.fbx");
+        Model ourModel("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_idle.glb");
         
         // int armBoneIndex = ourModel.GetBoneIndex("Armature_bicep_L");
-        model_animations["idle"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\FPS_arms_idle.fbx", &ourModel);
-        model_animations["reload"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\FPS_arms_reload.fbx", &ourModel);
-        model_animations["fire"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\FPS_arms_fire.fbx", &ourModel);
-        model_animations["walk"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\FPS_arms_walk.fbx", &ourModel);
+        model_animations["idle"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_idle.glb", &ourModel);
+        model_animations["reload"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_reload.glb", &ourModel);
+        model_animations["fire"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_fire.glb", &ourModel);
+        model_animations["walk"] = new Animation("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_walk.glb", &ourModel);
         // model_animations["idle"] = new Animation("..\\src\\AnimatedCharacterModel\\model_idle.dae", &ourModel);
         // model_animations["reload"] = new Animation("..\\src\\AnimatedCharacterModel\\model_reload.dae", &ourModel);
         
-        Model enemyModel("..\\src\\models\\enemy\\source\\poza.fbx");
+        Model enemyModel("..\\src\\models\\enemy\\source\\poza.glb");
         Model building_0("..\\src\\models\\buildings\\building.obj");
         Model sceneModel("..\\src\\scene\\scene.obj");
         Model boxModel("..\\src\\models\\box\\box.obj");
