@@ -116,8 +116,8 @@ void SwitchAnimation(std::map<std::string, Animation*> animations, const std::st
     }
 }
 
-void addRigidBody(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, float mass, bool is_static, bool is_animated, const Model& model, bool camera, bool camera_attached) {
-    RigidBody body(mass, position, rotation, scale, is_static, is_animated, model, camera, camera_attached);
+void addRigidBody(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, float mass, bool is_static, bool is_animated, const Model& model) {
+    RigidBody body(mass, position, rotation, scale, is_static, is_animated, model);
     body.model = model;
     // if (is_animated && animator) {
     //     body.animator = animator; // Assign animator if provided
@@ -352,8 +352,8 @@ int main()
     // addRigidBody(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.1f), 70.0f, true, false, building_0, false, false);
     // addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(-camera.Pitch - 5.0f), glm::radians(-camera.Yaw + 90.0f), 0.0f), glm::vec3(0.005f), 60.0f, false, true, ourModel, false, true, currentAnimatorModel);
     // addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(-camera.Pitch - 5.0f), glm::radians(-camera.Yaw + 90.0f), 0.0f), glm::vec3(0.005f), 60.0f, false, true, gunModel, false, true, currentAnimatorGun);
-    addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, true, false, sceneModel, false, false);
-    addRigidBody(glm::vec3(-1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, false, false, boxModel, false, false);
+    addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, true, false, sceneModel);
+    addRigidBody(glm::vec3(-1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, false, false, boxModel);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
