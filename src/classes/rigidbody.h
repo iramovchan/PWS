@@ -21,28 +21,27 @@ public:
     glm::vec3 rotation = glm::vec3(0.0f);
     bool is_static;
     bool is_animated;
-    bool camera_attached;
-    bool camera;
+    
     glm::vec3 force = glm::vec3(0.0f);
     float damping; // ????????
     Model model;
     Animator* animator;
 
     // RigidBody(float mass, glm::vec3 position = glm::vec3(0.0f), bool is_static = false);
-    RigidBody(float mass, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool is_static, bool is_animated, const Model& modelPath, bool camera, bool camera_attached)
-        : mass(mass), position(position), rotation(rotation), scale(scale), is_static(is_static), is_animated(is_animated), model(modelPath), camera(camera), camera_attached(camera_attached) {
+    RigidBody(float mass, const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, bool is_static, bool is_animated, const Model& modelPath)
+        : mass(mass), position(position), rotation(rotation), scale(scale), is_static(is_static), is_animated(is_animated), model(modelPath) {
         // The model is initialized using its constructor with the path.
     }
 
     void applyForce(const glm::vec3& force)
     {
-        // if (!is_static && (!camera && !camera_attached))
+       
         if (!is_static)
         {
             acceleration += force / mass; // F = ma
             // force += newForce;
         }
-        // gravity other forces bla bla
+        
     };
     void update(float deltaTime)
     {
