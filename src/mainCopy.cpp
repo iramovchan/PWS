@@ -136,11 +136,9 @@ int main()
     glEnable(GL_DEPTH_TEST);
 
     #ifdef _WIN32
-        Shader ourShader("..\\src\\shader_texture_stuff\\animated_model_loading.vs", "..\\src\\shader_texture_stuff\\model_loading.fs");
+        Shader ourShader("..\\src\\shader_texture_stuff\\model_loading.vs", "..\\src\\shader_texture_stuff\\model_loading.fs");
 
-        Model gunModel("..\\src\\models_animated\\FPS_gun_animated\\FPS_gun_idle.fbx");
-        
-        Model ourModel("..\\src\\models_animated\\FPS_arms_animated\\fps_arms_idle.fbx");
+        Model ourModel("..\\src\\models\\arms_gun.obj");
 
         Model building_0("..\\src\\models\\buildings\\building.obj");
         Model sceneModel("..\\src\\scene\\scene.obj");
@@ -249,14 +247,8 @@ int main()
         }
 
         glm::mat4 gunModelMatrix = glm::mat4(1.0f);
+        ourShader.setBool("isAnimated", false);
         glm::vec3 cameraPosWithOffset = camera.Position - glm::vec3(0.0f, 0.00f, 0.00f);
-        // gunModelMatrix = glm::translate(gunModelMatrix, glm::vec3(0.09f, 0.7f, -0.26f)); // Adjust position
-        gunModelMatrix = glm::translate(gunModelMatrix, cameraPosWithOffset); // Adjust position
-        gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(-camera.Yaw + 90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-        gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(-camera.Pitch - 5.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.005f));                 // Adjust scale
-        ourShader.setMat4("model", gunModelMatrix);
-        gunModel.Draw(ourShader);
         
         // render the loaded model
         glm::mat4 model = glm::mat4(1.0f);
