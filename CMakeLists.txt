@@ -23,7 +23,7 @@ add_subdirectory(external/freetype)
 add_executable(main 
     
 
-    src/mainCopy.cpp
+    src/main.cpp
     # src/text.cpp
     src/classes/stb_image.cpp
 )

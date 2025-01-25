@@ -72,6 +72,7 @@ Animator* currentAnimatorGun = new Animator(gun_animations["idle"]);
 
 std::string currentAnimation = "idle";
 const glm::vec3 GRAVITY(0.0f, -9.81f, 0.0f);
+// const glm::vec3 BULLET_FORCE(0.0f, -9.81f, 0.0f);
 std::vector<RigidBody> Rigidbodies;
 
 void SwitchAnimation(std::map<std::string, Animation*> animations, const std::string& animationName, Animator*& currentAnimator, bool playOnce, const std::string& idleAnimation)
@@ -215,7 +216,7 @@ int main()
         
         Model enemyModel("..\\src\\models\\enemy\\source\\poza.glb");
         Model building_0("..\\src\\models\\buildings\\building.obj");
-        Model sceneModel("..\\src\\scene\\scene.obj");
+        Model sceneModel("..\\src\\scene\\bank.obj");
         Model boxModel("..\\src\\models\\box\\box.obj");
 
         
@@ -251,9 +252,9 @@ int main()
         
         Model enemyModel("../src/models/enemy/source/poza.fbx");
         Model building_0("../src/models/buildings/building.obj");
-        Model sceneModel("../src/scene/scene.obj");
+        Model sceneModel("../src/scene/bank.obj");
         Model boxModel("../src/models/box/box.obj");
-
+        Model bulletModel("../src/models/bullet.obj");
         
         // std::string font_name = "../../src/fonts/comic.ttf";
     #endif
@@ -354,6 +355,7 @@ int main()
     // addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(-camera.Pitch - 5.0f), glm::radians(-camera.Yaw + 90.0f), 0.0f), glm::vec3(0.005f), 60.0f, false, true, gunModel, false, true, currentAnimatorGun);
     addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, true, false, sceneModel);
     addRigidBody(glm::vec3(-1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, false, false, boxModel);
+    addRigidBody(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 1.0f, true, false, bulletModel);
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))

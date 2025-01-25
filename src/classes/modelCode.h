@@ -1,7 +1,7 @@
 #ifndef MODELCODE_H
 #define MODELCODE_H
 
-#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace)
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes)
 
 #ifdef _WIN32
 #include <glad/glad.h> // holds all OpenGL type declarations
@@ -19,6 +19,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/aabb.h>
 
 #include "shaderCode.h"
 #include "meshCode.h"
@@ -44,6 +45,16 @@ public:
     string directory;
     bool gammaCorrection;
 
+    unsigned int aabbVAO = 0, aabbVBO = 0, aabbEBO = 0;
+    bool aabbInitialized = false;
+
+    // const aiAABB &aabb = scene->mMeshes[0]->mAABB;
+    // const aiAABB aabb;
+        
+    // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
+    // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
+
+
     Model()
     {}
 
@@ -56,8 +67,19 @@ public:
     // draws the model, and thus all its meshes
     void Draw(Shader &shader)
     {
-        for(unsigned int i = 0; i < meshes.size(); i++)
+        
+
+        for(unsigned int i = 0; i < meshes.size(); i++) {
+            // aabbInitialized = false;
+        
+            // meshes[i].setupAABB(min, max);
+            // meshes[i].DrawAABB(shader)
+            
             meshes[i].Draw(shader);
+            meshes[i].DrawAABB(shader);
+
+            // DrawAABB(shader);
+        }
     }
 
     auto& GetBoneInfoMap() { return m_BoneInfoMap; }
@@ -84,6 +106,7 @@ public:
             return -1;  // Return -1 if the bone is not found
         }
     }
+
 private:
     std::map<string, BoneInfo> m_BoneInfoMap;
     int m_BoneCounter = 0;
@@ -94,6 +117,9 @@ private:
         // Read file via ASSIMP
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, ASSIMP_LOAD_FLAGS);
+        // const aabb
+        // const aabb &aabb = scene->mMeshes[0]->mAABB;
+
         
         // Check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -109,6 +135,11 @@ private:
         processNode(scene->mRootNode, scene);
     }
 
+    // AABB createAABB(unsigned int meshIndex) const 
+    // {
+    //     scene->mMeshes[0]->mAABB;
+    // }
+
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     void processNode(aiNode *node, const aiScene *scene)
@@ -119,7 +150,7 @@ private:
             // the node object only contains indices to index the actual objects in the scene. 
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh, scene));
+            meshes.push_back(processMesh(mesh, scene, i));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for(unsigned int i = 0; i < node->mNumChildren; i++)
@@ -138,7 +169,7 @@ private:
         }
     }
 
-    Mesh processMesh(aiMesh *mesh, const aiScene *scene)
+    Mesh processMesh(aiMesh *mesh, const aiScene *scene, unsigned int meshIndex)
     {
         // data to fill
         vector<Vertex> vertices;
@@ -237,7 +268,21 @@ private:
 
         ExtractBoneWeightForVertices(vertices, mesh, scene);
         // return a mesh object created from the extracted mesh data
-        return Mesh(vertices, indices, textures);
+
+
+        // Initialize the AABB for this mesh
+        // Mesh meshObj(vertices, indices, textures);  // Create the Mesh object
+        // meshObj.setupAABB(scene->mMeshes[meshIndex]->mAABB);  // Set the AABB for the mesh
+
+        // // Return the mesh object with the AABB initialized
+        // return meshObj;
+        // mesh.setupAABB(scene->mMeshes[0]->mAABB);
+
+        
+        // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
+        // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
+
+        return Mesh(vertices, indices, textures, scene->mMeshes[0]->mAABB);
     }
 
     void SetVertexBoneData(Vertex& vertex, int boneID, float weight)
