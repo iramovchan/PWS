@@ -54,6 +54,9 @@ public:
     // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
     // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
 
+    // std::vector<Mesh> meshes;
+
+
 
     Model()
     {}
@@ -67,8 +70,6 @@ public:
     // draws the model, and thus all its meshes
     void Draw(Shader &shader)
     {
-        
-
         for(unsigned int i = 0; i < meshes.size(); i++) {
             // aabbInitialized = false;
         
@@ -132,7 +133,7 @@ private:
         // Retrieve the directory path without the .obj filename
         directory = path.substr(0, path.find_last_of("\\/"));  // works for both Windows and Unix file separators
         // Process ASSIMP's root node recursively
-        processNode(scene->mRootNode, scene);
+        processNode(scene->mRootNode, scene, 0);
     }
 
     // AABB createAABB(unsigned int meshIndex) const 
@@ -142,7 +143,7 @@ private:
 
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-    void processNode(aiNode *node, const aiScene *scene)
+    void processNode(aiNode *node, const aiScene *scene, unsigned int nodeIndex)
     {
         // process each mesh located at the current node
         for(unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -150,14 +151,14 @@ private:
             // the node object only contains indices to index the actual objects in the scene. 
             // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh, scene, i));
+            meshes.push_back(processMesh(mesh, scene, nodeIndex));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for(unsigned int i = 0; i < node->mNumChildren; i++)
         {
-            processNode(node->mChildren[i], scene);
+            processNode(node->mChildren[i], scene, nodeIndex);
+            nodeIndex++;
         }
-
     }
 
     void SetVertexBoneDataToDefault(Vertex& vertex)
@@ -281,8 +282,7 @@ private:
         
         // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
         // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
-
-        return Mesh(vertices, indices, textures, scene->mMeshes[0]->mAABB);
+        return Mesh(vertices, indices, textures, scene->mMeshes[meshIndex]->mAABB);
     }
 
     void SetVertexBoneData(Vertex& vertex, int boneID, float weight)

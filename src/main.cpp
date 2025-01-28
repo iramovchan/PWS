@@ -55,7 +55,7 @@ const unsigned int SCR_WIDTH = 1366; //1024; //1600; //1280; //800;
 const unsigned int SCR_HEIGHT = 768; //1200; //720; //600;
 
 // camera | forward/backward | up/down | left/right
-Camera camera(glm::vec3(-3.0f, 1.75f, 0.0f));
+Camera camera(glm::vec3(-3.0f, 2.0f, 0.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -117,7 +117,7 @@ void SwitchAnimation(std::map<std::string, Animation*> animations, const std::st
     }
 }
 
-void addRigidBody(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, float mass, bool is_static, bool is_animated, const Model& model) {
+void addRigidBody(const glm::vec3& position, const glm::vec3& rotation, const glm::vec3& scale, float mass, bool is_static, bool is_animated, Model* model) {
     RigidBody body(mass, position, rotation, scale, is_static, is_animated, model);
     body.model = model;
     // if (is_animated && animator) {
@@ -184,6 +184,8 @@ int main()
     // configure global opengl state
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Render wireframe
+
 
     #ifdef _WIN32
         Shader ourShader("..\\src\\shader_texture_stuff\\animated_model_loading.vs", "..\\src\\shader_texture_stuff\\model_loading.fs");
@@ -353,11 +355,13 @@ int main()
     // addRigidBody(glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(0.1f), 70.0f, true, false, building_0, false, false);
     // addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(-camera.Pitch - 5.0f), glm::radians(-camera.Yaw + 90.0f), 0.0f), glm::vec3(0.005f), 60.0f, false, true, ourModel, false, true, currentAnimatorModel);
     // addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(glm::radians(-camera.Pitch - 5.0f), glm::radians(-camera.Yaw + 90.0f), 0.0f), glm::vec3(0.005f), 60.0f, false, true, gunModel, false, true, currentAnimatorGun);
-    addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, true, false, sceneModel);
-    addRigidBody(glm::vec3(-1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, false, false, boxModel);
-    addRigidBody(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 1.0f, true, false, bulletModel);
+    addRigidBody(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, true, false, &sceneModel);
+    addRigidBody(glm::vec3(-1.0f, 3.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 70.0f, false, false, &boxModel);
+    addRigidBody(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f), 100.0f, false, false, &bulletModel);
     // render loop
     // -----------
+    bool collisionFound = false;
+
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
@@ -403,68 +407,65 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
 
+        
 
-        for (int i = 0; i < Rigidbodies.size(); i++)
-        {
+
+        for (size_t i = 0; i < Rigidbodies.size(); ++i) {
             RigidBody& body = Rigidbodies[i];
-            if (!body.is_static)
-            {
+
+            // Handle collisions with other rigid bodies
+            // for (size_t j = i + 1; j < Rigidbodies.size(); ++j) {
+            //     if (body.IsColliding(Rigidbodies[j])) {
+            //         // collisionFound = true;
+            //         std::cout << "collision checked num.: " << j << "i: " << i << std::endl;
+            //         body.resolveAABBCollision(Rigidbodies[j]);
+            //     }
+            // }
+                        // Apply physics updates if the body is not static
+
+            if (!body.is_static) {
                 body.applyForce(GRAVITY);
                 body.update(deltaTime);
             }
-            
-            glm::vec3 updatedPosition = body.position;
 
-            // if (body.camera)
-            // {
-            //     camera.Position = updatedPosition;
-            // }
-            // else
-            // {
-                // Handle camera-attached models
-                // if (body.camera_attached) {
-                //     updatedPosition = camera.Position;
-                //     body.rotation.x = glm::radians(-camera.Pitch - 5.0f);
-                //     body.rotation.y = glm::radians(-camera.Yaw + 90.0f);
-                    
-                //     // updatedPosition += glm::vec3(0.1f, -0.2f, -0.5f); // Gun offset
-                //     // glm::vec3 cameraPosWithOffset = camera.Position - glm::vec3(0.0f, 0.00f, 0.00f);
-                //     // std::cout << "camera attached" << std::endl;
+            
+                // Check collisions
+            for (size_t j = i + 1; j < Rigidbodies.size(); ++j) {
+                // RigidBody& other = Rigidbodies[j];
+
+                // for (auto& mesh : body.model->meshes) {
+                //     for (auto& otherMesh : other.model->meshes) {
+                //         // Perform per-mesh collision detection
+                //         // if (mesh.aabb.intersects(otherMesh.AABB)) {
+                //         //     std::cout << "Collision detected between meshes!" << std::endl;
+                //         //     body.resolveAABBCollision(other);
+                //         // }
+                //         // body.collisionDetection();
+                //     }
                 // }
 
+                // std::cout << "Rigidbody[" << i << "], checked with [" << j << "]" << std::endl;
+                if (body.checkCollision(Rigidbodies[j])) {
+                    std::cout << "COLLISION!!!" << std::endl;
 
+                    body.resolveCollision(Rigidbodies[j]);
+                }
+            }
+
+
+            // Calculate the model matrix
             glm::mat4 modelMatrix = glm::mat4(1.0f);
-            modelMatrix = glm::translate(modelMatrix, updatedPosition); // Translate to updated position
+            modelMatrix = glm::translate(modelMatrix, body.position); // Translate to updated position
             modelMatrix = glm::rotate(modelMatrix, glm::radians(body.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f)); // Pitch
             modelMatrix = glm::rotate(modelMatrix, glm::radians(body.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f)); // Yaw
             modelMatrix = glm::rotate(modelMatrix, glm::radians(body.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f)); // Roll
-            modelMatrix = glm::scale(modelMatrix, body.scale);   // Adjust scale if necessary
+            modelMatrix = glm::scale(modelMatrix, body.scale); // Adjust scale if necessary
 
+            // Pass the model matrix to the shader
             ourShader.setMat4("model", modelMatrix);
             ourShader.setBool("isAnimated", body.is_animated);
 
-                // if (body.is_animated && body.animator) {
-                //     if (body.animator != nullptr)
-                //     {
-                        
-                //         auto transforms = body.animator->GetFinalBoneMatrices();
-                //         for (int i = 0; i < transforms.size(); ++i) {
-                //             ourShader.setMat4("finalBonesMatrices[" + std::to_string(i) + "]", transforms[i]);
-                //         }
-
-                //     }
-                //     else
-                //     {
-                //         std::cout << "currentAnimator is null!" << std::endl;
-                //     }
-
-                    
-                // }
-
-            body.model.Draw(ourShader); // Use the model associated with this rigid body
-            // }
-
-            // std::cout << Rigidbodies.size() << std::endl;
+            body.model->Draw(ourShader);
         }
 
 
@@ -501,6 +502,16 @@ int main()
         model = glm::scale(model, glm::vec3(0.005f));	// it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
+        // Player player;
+
+        // glm::vec3 playerSize = glm::vec3(1.0f, 1.0f, 1.0f);
+
+        // // Camera camera(glm::vec3(-3.0f, 1.75f, 0.0f));
+        // glm::vec3 playerPosition = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        // player.drawPlayerBoundingBox(ourShader, playerPosition, playerSize);
+        // forward/backward | up/down | left/right
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -49,6 +49,11 @@ public:
 
     unsigned int aabbVAO = 0, aabbVBO = 0, aabbEBO = 0;
     bool aabbInitialized = false;
+    aiAABB mAABB;
+    // glm::vec3 aabbWorldMin; // Updated world-space AABB min
+    // glm::vec3 aabbWorldMax; // Updated world-space AABB max
+    glm::vec4 transform;
+
 
     // constructor
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures, const aiAABB &aabb)
@@ -56,10 +61,10 @@ public:
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
+        this->mAABB = aabb;
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers.
         setupMesh();
-
         setupAABB(aabb);
     }
 
@@ -124,8 +129,6 @@ public:
         //     return;
         // }
         if (!aabbInitialized) {
-            
-        
             // Initialize AABB for this mesh
             aabbInitialized = true;
         }
@@ -144,8 +147,9 @@ public:
     void setupAABB(const aiAABB &aabb){
         if (aabbInitialized == false)
         {
-            
-            
+            std::cout << "FROM THE MESHCODE: AABBMIN: " << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << std::endl;   
+            std::cout << "FROM THE MESHCODE: AABBMAX: " << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << std::endl;   
+
             glm::vec3 vertices[8] = {
                 {aabb.mMin.x, aabb.mMin.y, aabb.mMin.z},
                 {aabb.mMax.x, aabb.mMin.y, aabb.mMin.z},
