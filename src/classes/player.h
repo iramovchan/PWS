@@ -45,94 +45,114 @@ public:
     // float MouseSensitivity;
     // float Zoom;
 
-    void drawPlayerBoundingBox(Shader& shader, glm::vec3 playerPosition, glm::vec3 playerSize) {
-        // glm::vec3 aabbMin = (playerPosition - playerSize) / 2.0f;
-        // glm::vec3 aabbMax = (playerPosition + playerSize) / 2.0f;
+    void drawPlayerBoundingBox(Mesh& mesh1, Mesh& mesh2, glm::vec3 playerPosition){
+        glm::vec3 aabbMin = glm::vec3(-0.1f, -2.0f, -0.1f);
+        glm::vec3 aabbMax = glm::vec3(0.1f, 0.0f, 0.1f);
 
-        glm::vec3 aabbMin = playerPosition - playerSize / 2.0f;
-        glm::vec3 aabbMax = playerPosition + playerSize / 2.0f;
+        aiAABB playerAABB;
+        playerAABB.mMin = {aabbMin.x, aabbMin.y, aabbMin.z};
+        playerAABB.mMax = {aabbMax.x, aabbMax.y, aabbMax.z};
 
-        // glm::vec3 aabbMin = glm::vec3(0.0f, 0.0f, 0.0f);
-        // forward/backward | up/down | left/right
-
-        /*
-        AABB Min Position: (-0.5, 0, -0.5)
-        AABB Max Position: (0.5, 2, 0.5)
-        Player positions (x, y, z)0 / 1 / 0
-
-        AABB Min Position: (-0.5, -0.5, -0.5)
-        AABB Max Position: (0.5, 1.5, 0.5)
-        Player positions (x, y, z)0 / 1 / 0
-
-        AABB Min Position: (-0.25, 0, -0.25)
-        AABB Max Position: (0.25, 1, 0.25)
-        Player positions (x, y, z)0 / 1 / 0
-        */
-
-        // glm::vec3 aabbMax = glm::vec3(5.0f, 5.0f, 5.0f);
-        std::cout << "AABB Min Position: (" << aabbMin.x << ", " << aabbMin.y << ", " << aabbMin.z << ")" << std::endl;
-        std::cout << "AABB Max Position: (" << aabbMax.x << ", " << aabbMax.y << ", " << aabbMax.z << ")" << std::endl;
-        std::cout << "Player positions (x, y, z)" << playerPosition.x << " / " << playerPosition.y << " / " << playerPosition.z << std::endl;
-
-        // Model loaded successfully: ../src/models_animated/FPS_arms_animated/FPS_arms_idle.fbx
-        // FROM THE MESHCODE: AABBMIN: -1.02045, -0.125138, -0.0560648
-        // FROM THE MESHCODE: AABBMAX: 1.02045, 0.0731141, 0.0560648
-
-        // std::cout << "x: " << aabbMax.x << ", y: " << aabbMax.y << ", z: " << aabbMax.z << std::endl;
-
-        // Define the 8 corners of the AABB
-        glm::vec3 aabbVertices[8] = {
-            {aabbMin.x, aabbMin.y, aabbMin.z},
-            {aabbMax.x, aabbMin.y, aabbMin.z},
-            {aabbMax.x, aabbMax.y, aabbMin.z},
-            {aabbMin.x, aabbMax.y, aabbMin.z},
-            {aabbMin.x, aabbMin.y, aabbMax.z},
-            {aabbMax.x, aabbMin.y, aabbMax.z},
-            {aabbMax.x, aabbMax.y, aabbMax.z},
-            {aabbMin.x, aabbMax.y, aabbMax.z}
-        };
-
-        // Define the indices for the lines that form the edges of the bounding box
-        unsigned int aabbIndices[] = {
-            0, 1, 1, 2, 2, 3, 3, 0,  // Bottom face
-            4, 5, 5, 6, 6, 7, 7, 4,  // Top face
-            0, 4, 1, 5, 2, 6, 3, 7   // Vertical edges
-        };
-
-        // Create VAO, VBO, and EBO for the AABB (bounding box)
-        GLuint aabbVAO, aabbVBO, aabbEBO;
-        glGenVertexArrays(1, &aabbVAO);
-        glGenBuffers(1, &aabbVBO);
-        glGenBuffers(1, &aabbEBO);
-
-        glBindVertexArray(aabbVAO);
-
-        // VBO for vertices
-        glBindBuffer(GL_ARRAY_BUFFER, aabbVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(aabbVertices), aabbVertices, GL_STATIC_DRAW);
-
-        // EBO for indices
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aabbEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(aabbIndices), aabbIndices, GL_STATIC_DRAW);
-
-        // Set up vertex attribute pointers
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-
-        glBindVertexArray(0);  // Unbind VAO
-
-        // Render the AABB
-        shader.use();
-
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, playerPosition); // Use the player position
-        model = glm::scale(model, playerSize); // Use player size for scaling
-        shader.setMat4("model", model);
-
-        glBindVertexArray(aabbVAO);
-        glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);  // Draw the AABB
-        glBindVertexArray(0);
+        mesh1.setupAABB(playerAABB);
+        mesh2.setupAABB(playerAABB);
+        
     }
+    // void drawPlayerBoundingBox(Shader& shader, glm::vec3 playerPosition, glm::vec3 playerSize) {
+    //     // glm::vec3 aabbMin = (playerPosition - playerSize) / 2.0f;
+    //     // glm::vec3 aabbMax = (playerPosition + playerSize) / 2.0f;
+
+    //     // glm::vec3 aabbMin = playerPosition - playerSize / 2.0f;
+    //     // glm::vec3 aabbMax = playerPosition + playerSize / 2.0f;
+
+    //     glm::vec3 aabbMin = glm::vec3(-0.1f, -2.0f, -0.1f);
+    //     glm::vec3 aabbMax = glm::vec3(0.1f, 0.0f, 0.1f);
+
+
+
+    //     // glm::vec3 aabbMin = glm::vec3(0.0f, playerPosition.x - playerSize.x, playerPosition.z - playerSize.z);
+    //     // glm::vec3 aabbMax = glm::vec3(playerSize.y, playerPosition.x + playerSize.x, playerPosition.z + playerSize.z);
+
+    //     // glm::vec3 aabbMin = glm::vec3(0.0f, 0.0f, 0.0f);
+    //     // forward/backward | up/down | left/right
+
+    //     /*
+    //     AABB Min Position: (-0.5, 0, -0.5)
+    //     AABB Max Position: (0.5, 2, 0.5)
+    //     Player positions (x, y, z)0 / 1 / 0
+
+    //     AABB Min Position: (-0.5, -0.5, -0.5)
+    //     AABB Max Position: (0.5, 1.5, 0.5)
+    //     Player positions (x, y, z)0 / 1 / 0
+
+    //     AABB Min Position: (-0.25, 0, -0.25)
+    //     AABB Max Position: (0.25, 1, 0.25)
+    //     Player positions (x, y, z)0 / 1 / 0
+    //     */
+
+    //     // glm::vec3 aabbMax = glm::vec3(5.0f, 5.0f, 5.0f);
+    //     std::cout << "AABB Min Position: (" << aabbMin.x << ", " << aabbMin.y << ", " << aabbMin.z << ")" << std::endl;
+    //     std::cout << "AABB Max Position: (" << aabbMax.x << ", " << aabbMax.y << ", " << aabbMax.z << ")" << std::endl;
+    //     // std::cout << "Player positions (x, y, z)" << playerPosition.x << " / " << playerPosition.y << " / " << playerPosition.z << std::endl;
+
+    //     // Model loaded successfully: ../src/models_animated/FPS_arms_animated/FPS_arms_idle.fbx
+    //     // FROM THE MESHCODE: AABBMIN: -1.02045, -0.125138, -0.0560648
+    //     // FROM THE MESHCODE: AABBMAX: 1.02045, 0.0731141, 0.0560648
+
+    //     // std::cout << "x: " << aabbMax.x << ", y: " << aabbMax.y << ", z: " << aabbMax.z << std::endl;
+
+    //     // Define the 8 corners of the AABB
+    //     glm::vec3 aabbVertices[8] = {
+    //         {aabbMin.x, aabbMin.y, aabbMin.z},
+    //         {aabbMax.x, aabbMin.y, aabbMin.z},
+    //         {aabbMax.x, aabbMax.y, aabbMin.z},
+    //         {aabbMin.x, aabbMax.y, aabbMin.z},
+    //         {aabbMin.x, aabbMin.y, aabbMax.z},
+    //         {aabbMax.x, aabbMin.y, aabbMax.z},
+    //         {aabbMax.x, aabbMax.y, aabbMax.z},
+    //         {aabbMin.x, aabbMax.y, aabbMax.z}
+    //     };
+
+    //     // Define the indices for the lines that form the edges of the bounding box
+    //     unsigned int aabbIndices[] = {
+    //         0, 1, 1, 2, 2, 3, 3, 0,  // Bottom face
+    //         4, 5, 5, 6, 6, 7, 7, 4,  // Top face
+    //         0, 4, 1, 5, 2, 6, 3, 7   // Vertical edges
+    //     };
+
+    //     // Create VAO, VBO, and EBO for the AABB (bounding box)
+    //     GLuint aabbVAO, aabbVBO, aabbEBO;
+    //     glGenVertexArrays(1, &aabbVAO);
+    //     glGenBuffers(1, &aabbVBO);
+    //     glGenBuffers(1, &aabbEBO);
+
+    //     glBindVertexArray(aabbVAO);
+
+    //     // VBO for vertices
+    //     glBindBuffer(GL_ARRAY_BUFFER, aabbVBO);
+    //     glBufferData(GL_ARRAY_BUFFER, sizeof(aabbVertices), aabbVertices, GL_STATIC_DRAW);
+
+    //     // EBO for indices
+    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aabbEBO);
+    //     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(aabbIndices), aabbIndices, GL_STATIC_DRAW);
+
+    //     // Set up vertex attribute pointers
+    //     glEnableVertexAttribArray(0);
+    //     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+
+    //     glBindVertexArray(0);  // Unbind VAO
+
+    //     // Render the AABB
+    //     shader.use();
+
+    //     glm::mat4 boxModel = glm::mat4(1.0f);
+    //     boxModel = glm::translate(boxModel, playerPosition); // Use the player position
+    //     // boxModel = glm::scale(boxModel, playerSize); // Use player size for scaling
+    //     shader.setMat4("model", boxModel);
+
+    //     glBindVertexArray(aabbVAO);
+    //     glDrawElements(GL_LINES, 24, GL_UNSIGNED_INT, 0);  // Draw the AABB
+    //     glBindVertexArray(0);
+    // }
 
     // // constructor with vectors
     // Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)

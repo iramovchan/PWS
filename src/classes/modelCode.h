@@ -48,16 +48,6 @@ public:
     unsigned int aabbVAO = 0, aabbVBO = 0, aabbEBO = 0;
     bool aabbInitialized = false;
 
-    // const aiAABB &aabb = scene->mMeshes[0]->mAABB;
-    // const aiAABB aabb;
-        
-    // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
-    // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
-
-    // std::vector<Mesh> meshes;
-
-
-
     Model()
     {}
 
@@ -71,15 +61,13 @@ public:
     void Draw(Shader &shader)
     {
         for(unsigned int i = 0; i < meshes.size(); i++) {
-            // aabbInitialized = false;
-        
-            // meshes[i].setupAABB(min, max);
-            // meshes[i].DrawAABB(shader)
-            
             meshes[i].Draw(shader);
-            meshes[i].DrawAABB(shader);
+        }
+    }
 
-            // DrawAABB(shader);
+    void DrawBoundingBox(Shader &shader) {
+        for(unsigned int i = 0; i < meshes.size(); i++) {
+            meshes[i].DrawAABB(shader);
         }
     }
 
@@ -118,9 +106,6 @@ private:
         // Read file via ASSIMP
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, ASSIMP_LOAD_FLAGS);
-        // const aabb
-        // const aabb &aabb = scene->mMeshes[0]->mAABB;
-
         
         // Check for errors
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
@@ -135,12 +120,6 @@ private:
         // Process ASSIMP's root node recursively
         processNode(scene->mRootNode, scene, 0);
     }
-
-    // AABB createAABB(unsigned int meshIndex) const 
-    // {
-    //     scene->mMeshes[0]->mAABB;
-    // }
-
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     void processNode(aiNode *node, const aiScene *scene, unsigned int nodeIndex)
@@ -181,61 +160,59 @@ private:
         {
             Vertex vertex;
             SetVertexBoneDataToDefault(vertex);
-            vertex.Position = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
-            vertex.Normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
+            // vertex.Position = AssimpGLMHelpers::GetGLMVec(mesh->mVertices[i]);
+            // vertex.Normal = AssimpGLMHelpers::GetGLMVec(mesh->mNormals[i]);
             
-            if (mesh->mTextureCoords[0])
-            {
-                glm::vec2 vec;
-                vec.x = mesh->mTextureCoords[0][i].x;
-                vec.y = mesh->mTextureCoords[0][i].y;
-                vertex.TexCoords = vec;
-            }
-            else
-            {
-                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            }
-            vertices.push_back(vertex);
-            // glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
-            // // positions
-            // vector.x = mesh->mVertices[i].x;
-            // vector.y = mesh->mVertices[i].y;
-            // vector.z = mesh->mVertices[i].z;
-            // vertex.Position = vector;
-            // // normals
-            // if (mesh->HasNormals())
-            // {
-            //     vector.x = mesh->mNormals[i].x;
-            //     vector.y = mesh->mNormals[i].y;
-            //     vector.z = mesh->mNormals[i].z;
-            //     vertex.Normal = vector;
-            // }
-            // // texture coordinates
-            // if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            // if (mesh->mTextureCoords[0])
             // {
             //     glm::vec2 vec;
-            //     // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
-            //     // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-            //     vec.x = mesh->mTextureCoords[0][i].x; 
+            //     vec.x = mesh->mTextureCoords[0][i].x;
             //     vec.y = mesh->mTextureCoords[0][i].y;
             //     vertex.TexCoords = vec;
-            //     // tangent
-            //     vector.x = mesh->mTangents[i].x;
-            //     vector.y = mesh->mTangents[i].y;
-            //     vector.z = mesh->mTangents[i].z;
-            //     vertex.Tangent = vector;
-            //     // bitangent
-            //     vector.x = mesh->mBitangents[i].x;
-            //     vector.y = mesh->mBitangents[i].y;
-            //     vector.z = mesh->mBitangents[i].z;
-            //     vertex.Bitangent = vector;
             // }
-            // else {
+            // else
+            // {
             //     vertex.TexCoords = glm::vec2(0.0f, 0.0f);
-            //     }
+            // }
             // vertices.push_back(vertex);
-            // std::cout << "Vertex " << i << ": TexCoords (" << vertex.TexCoords.x << ", " << vertex.TexCoords.y << ")" << std::endl;
-
+            glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+            // positions
+            vector.x = mesh->mVertices[i].x;
+            vector.y = mesh->mVertices[i].y;
+            vector.z = mesh->mVertices[i].z;
+            vertex.Position = vector;
+            // normals
+            if (mesh->HasNormals())
+            {
+                vector.x = mesh->mNormals[i].x;
+                vector.y = mesh->mNormals[i].y;
+                vector.z = mesh->mNormals[i].z;
+                vertex.Normal = vector;
+            }
+            // texture coordinates
+            if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+            {
+                glm::vec2 vec;
+                // a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
+                // use models where a vertex can have multiple texture coordinates so we always take the first set (0).
+                vec.x = mesh->mTextureCoords[0][i].x; 
+                vec.y = mesh->mTextureCoords[0][i].y;
+                vertex.TexCoords = vec;
+                // tangent
+                vector.x = mesh->mTangents[i].x;
+                vector.y = mesh->mTangents[i].y;
+                vector.z = mesh->mTangents[i].z;
+                vertex.Tangent = vector;
+                // bitangent
+                vector.x = mesh->mBitangents[i].x;
+                vector.y = mesh->mBitangents[i].y;
+                vector.z = mesh->mBitangents[i].z;
+                vertex.Bitangent = vector;
+            }
+            else {
+                vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+                }
+            vertices.push_back(vertex);
         }
         // now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
         for(unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -270,18 +247,6 @@ private:
         ExtractBoneWeightForVertices(vertices, mesh, scene);
         // return a mesh object created from the extracted mesh data
 
-
-        // Initialize the AABB for this mesh
-        // Mesh meshObj(vertices, indices, textures);  // Create the Mesh object
-        // meshObj.setupAABB(scene->mMeshes[meshIndex]->mAABB);  // Set the AABB for the mesh
-
-        // // Return the mesh object with the AABB initialized
-        // return meshObj;
-        // mesh.setupAABB(scene->mMeshes[0]->mAABB);
-
-        
-        // std::cout << "AABB Min: (" << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << ")\n";
-        // std::cout << "AABB Max: (" << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << ")\n";
         return Mesh(vertices, indices, textures, scene->mMeshes[meshIndex]->mAABB);
     }
 
@@ -386,13 +351,6 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
             filename = directory + '/' + std::string(path);
         #endif
     }
-
-    // #ifdef _WIN32
-    //     filename = directory + '\\' + filename;
-    // #elif __APPLE__
-    //     filename = directory + '/' + filename;
-    //     std::cout << filename << std::endl;
-    // #endif
 
     unsigned int textureID;
     glGenTextures(1, &textureID);

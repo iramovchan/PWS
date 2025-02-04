@@ -11,6 +11,8 @@
 #include <../../glm/glm/gtc/matrix_transform.hpp>
 #endif
 
+#include "game_object.h"
+
 // class Camera
 // {
 // public:
@@ -45,7 +47,7 @@ const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
-class Camera
+class Camera : public GameObject
 {
 public:
     // camera Attributes
@@ -61,7 +63,7 @@ public:
     float MovementSpeed;
     float MouseSensitivity;
     float Zoom;
-
+    
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
@@ -92,18 +94,27 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+        auto nextPosition = Position;
         if (direction == FORWARD)
-            Position += glm::vec3(Front.x, 0.0f, Front.z) * velocity;  // Limit to x and z axis
+            nextPosition += glm::vec3(Front.x, 0.0f, Front.z) * velocity;  // Limit to x and z axis
         if (direction == BACKWARD)
-            Position -= glm::vec3(Front.x, 0.0f, Front.z) * velocity; // Limit to x and z axis
+            nextPosition -= glm::vec3(Front.x, 0.0f, Front.z) * velocity; // Limit to x and z axis
         if (direction == LEFT)
-            Position -= glm::vec3(Right.x, 0.0f, Right.z) * velocity; // Limit to x and z axis
+            nextPosition -= glm::vec3(Right.x, 0.0f, Right.z) * velocity; // Limit to x and z axis
         if (direction == RIGHT)
-            Position += glm::vec3(Right.x, 0.0f, Right.z) * velocity;  // Limit to x and z axis
+            nextPosition += glm::vec3(Right.x, 0.0f, Right.z) * velocity;  // Limit to x and z axis
         if (direction == UP)          // Added UP movement
-            Position += WorldUp * velocity;
+            nextPosition += WorldUp * velocity;
         if (direction == DOWN)        // Added DOWN movement
-            Position -= WorldUp * velocity;
+            nextPosition -= WorldUp * velocity;
+
+        bool collides = false;
+        if(check_collision) {
+            collides = check_collision(*this, nextPosition);
+        }
+        if(!collides) {
+            Position = nextPosition;
+        }
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

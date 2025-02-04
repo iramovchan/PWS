@@ -128,10 +128,10 @@ public:
         // if (aabbInitialized == true){
         //     return;
         // }
-        if (!aabbInitialized) {
-            // Initialize AABB for this mesh
-            aabbInitialized = true;
-        }
+        // if (!aabbInitialized) {
+        //     // Initialize AABB for this mesh
+        //     aabbInitialized = true;
+        // }
 
         shader.use();
         // shader.setMat4("model", model);
@@ -145,10 +145,11 @@ public:
     }
 
     void setupAABB(const aiAABB &aabb){
+
         if (aabbInitialized == false)
         {
-            std::cout << "FROM THE MESHCODE: AABBMIN: " << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << std::endl;   
-            std::cout << "FROM THE MESHCODE: AABBMAX: " << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << std::endl;   
+            // std::cout << "FROM THE MESHCODE: AABBMIN: " << aabb.mMin.x << ", " << aabb.mMin.y << ", " << aabb.mMin.z << std::endl;   
+            // std::cout << "FROM THE MESHCODE: AABBMAX: " << aabb.mMax.x << ", " << aabb.mMax.y << ", " << aabb.mMax.z << std::endl;   
 
             glm::vec3 vertices[8] = {
                 {aabb.mMin.x, aabb.mMin.y, aabb.mMin.z},
@@ -186,46 +187,6 @@ public:
             // aabbInitialized = true;
         }
     }
-
-    // void setupAABB(const glm::vec3& min, const glm::vec3& max)
-    // {
-    //     if (aabbInitialized) return;
-
-    //     glm::vec3 vertices[8] = {
-    //         {min.x, min.y, min.z},
-    //         {max.x, min.y, min.z},
-    //         {max.x, max.y, min.z},
-    //         {min.x, max.y, min.z},
-    //         {min.x, min.y, max.z},
-    //         {max.x, min.y, max.z},
-    //         {max.x, max.y, max.z},
-    //         {min.x, max.y, max.z},
-    //     };
-
-    //     unsigned int indices[] = {
-    //         0, 1, 1, 2, 2, 3, 3, 0,  // Bottom face
-    //         4, 5, 5, 6, 6, 7, 7, 4,  // Top face
-    //         0, 4, 1, 5, 2, 6, 3, 7   // Vertical edges
-    //     };
-
-    //     glGenVertexArrays(1, &aabbVAO);
-    //     glGenBuffers(1, &aabbVBO);
-    //     glGenBuffers(1, &aabbEBO);
-
-    //     glBindVertexArray(aabbVAO);
-
-    //     glBindBuffer(GL_ARRAY_BUFFER, aabbVBO);
-    //     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, aabbEBO);
-    //     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    //     glEnableVertexAttribArray(0);
-    //     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-
-    //     glBindVertexArray(0);
-    //     aabbInitialized = true;
-    // }
 
 private:
     // render data 
